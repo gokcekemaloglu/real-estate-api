@@ -24,8 +24,12 @@ dbConnection()
 // Accept JSON:
 app.use(express.json())
 
+// This middleware allows Express to read data sent from HTML forms.
+// It converts form data into a JavaScript object and makes it available in req.body.
+app.use(express.urlencoded({ extended: true }))
+
 // RUN SERVER:
-app.listen(PORT, HOST, () => console.log(`http://${HOST}:${PORT}`))
+app.listen(PORT, HOST, () => console.log(`Server running at http://${HOST}:${PORT}`))
 
 /* ------------------------------------------------------- */
 
