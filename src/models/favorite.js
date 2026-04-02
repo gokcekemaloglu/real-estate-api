@@ -6,7 +6,7 @@
 
 const {mongoose} = require("../configs/dbConnection")
 
-const UserSchema = new mongoose.Schema({
+const FavoriteSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -23,3 +23,5 @@ const UserSchema = new mongoose.Schema({
     collection: "favorites",
     timestamps: true
 })
+
+module.exports = mongoose.model("Favorite", FavoriteSchema)
