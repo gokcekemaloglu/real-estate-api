@@ -20,7 +20,8 @@ const PropertyImageSchema = new mongoose.Schema({
     },
     isCover: {
         type: Boolean,
-        default: false
+        default: false,
+        index: true
     }
 }, {
     collection: "propertyImages",
