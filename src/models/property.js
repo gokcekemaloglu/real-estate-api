@@ -6,7 +6,7 @@
 
 const {mongoose} = require("../configs/dbConnection")
 
-const propertySchema = new mongoose.Schema({
+const PropertySchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -124,4 +124,4 @@ const propertySchema = new mongoose.Schema({
     timestamps: true
 })
 
-module.exports = mongoose.model("Property", propertySchema)
+module.exports = mongoose.model("Property", PropertySchema)
