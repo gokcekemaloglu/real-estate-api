@@ -24,4 +24,6 @@ const FavoriteSchema = new mongoose.Schema({
     timestamps: true
 })
 
+FavoriteSchema.index({userId: 1, propertyId: 1}, {unique: true})
+
 module.exports = mongoose.model("Favorite", FavoriteSchema)

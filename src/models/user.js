@@ -32,11 +32,11 @@ const UserSchema = new mongoose.Schema({
         minlength: 6,
         select: false
     },
-    role: {
-        type: String,
-        enum: ["admin", "agent", "customer"],
-        default: "customer"
-    },
+    // role: {
+    //     type: String,
+    //     enum: ["admin", "agent", "customer"],
+    //     default: "customer"
+    // },
     phone: {
         type: String,
         trim: true

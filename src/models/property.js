@@ -86,10 +86,10 @@ const PropertySchema = new mongoose.Schema({
         type: String,
         enum: ["central", "combi", "electric", "stove", "none"]
     },
-    hasBalcony: {
+    /*hasBalcony: {
         type: Boolean,
         default: false
-    },
+    },*/
     hasElevator: {
         type: Boolean,
         default: false
@@ -118,7 +118,11 @@ const PropertySchema = new mongoose.Schema({
     favouritesCount: {
         type: Number,
         default: 0
-    }
+    },
+    isLoanEligible: {
+        type: Boolean,
+        default: true
+    },
 }, {
     collection: "properties",
     timestamps: true
