@@ -37,7 +37,8 @@ const CustomerSchema = new mongoose.Schema({
     },
     citizenshipID: {
         type: String,
-        trim: true
+        trim: true,
+        index: true
     },
     note: {
         type: String,
