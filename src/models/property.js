@@ -123,6 +123,12 @@ const PropertySchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Customer",
+        required: true,
+        index: true
+    }
 }, {
     collection: "properties",
     timestamps: true
