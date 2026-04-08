@@ -24,6 +24,10 @@ const FavoriteSchema = new mongoose.Schema({
     timestamps: true
 })
 
+/*
+ Prevent duplicate favorites
+ Same user cannot favorite the same property twice
+*/
 FavoriteSchema.index({userId: 1, propertyId: 1}, {unique: true})
 
 module.exports = mongoose.model("Favorite", FavoriteSchema)
