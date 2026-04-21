@@ -123,7 +123,7 @@ const PropertySchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    owner: {
+    ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Customer",
         required: true,

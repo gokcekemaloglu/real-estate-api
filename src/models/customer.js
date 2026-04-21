@@ -17,13 +17,6 @@ const CustomerSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    email: {
-        type: String,
-        unique: true,
-        lowercase: true,
-        trim: true,
-        index: true
-    },
     phone: {
         type: String,
         unique: true,
@@ -31,11 +24,18 @@ const CustomerSchema = new mongoose.Schema({
         trim: true,
         index: true
     },
+    email: {
+        type: String,
+        unique: true,
+        lowercase: true,
+        trim: true,
+        index: true
+    },
     address: {
         type: String,
         trim: true
     },
-    citizenshipID: {
+    citizenshipId: {
         type: String,
         trim: true,
         index: true
