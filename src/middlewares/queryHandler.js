@@ -26,6 +26,11 @@ module.exports = (req, res, next) => {
     // asc: A-Z - desc: Z-A
     const sort = req.query?.sort || {}
     // console.log(sort)
+    
+    // Default sort by newest first:
+    if (!Object.keys(sort).length) {
+        sort.createdAt = -1 // Default sorting by creation date (newest first)
+    }
 
     // ### PAGINATION ###
 

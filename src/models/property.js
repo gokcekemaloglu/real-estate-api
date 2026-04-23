@@ -134,4 +134,6 @@ const PropertySchema = new mongoose.Schema({
     timestamps: true
 })
 
+PropertySchema.index({createdAt: -1})
+
 module.exports = mongoose.model("Property", PropertySchema)
