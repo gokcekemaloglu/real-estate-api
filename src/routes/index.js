@@ -7,6 +7,8 @@ const router = require("express").Router()
 
 // Property routes:
 router.use("/properties", require("./property"))
+// User routes:
+router.use("/users", require("./user"))
 
 
 /* ----------------------------------- */

@@ -5,16 +5,32 @@
 /* ------------------------------------------------- */
 
 const {mongoose} = require("../configs/dbConnection")
+const validator = require("validator")
+const validatePassword = require("../helpers/validatePassword")
 
 const UserSchema = new mongoose.Schema({
+    userName: {
+      type: String,
+      required: [true, "Username is required"],
+      unique: true,
+      trim: true,
+      index: true,
+    },
+    password: {
+        type: String,
+        required: [true, "Password is required"],
+        trim: true,
+        validate: {validator: validatePassword, message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character"},
+        select: false
+    },
     firstName: {
         type: String,
-        required: true,
+        required: [true, "First name is required"],
         trim: true
     },
     lastName: {
         type: String,
-        required: true,
+        required: [true, "Last name is required"],
         trim: true
     },
     email: {
@@ -23,14 +39,8 @@ const UserSchema = new mongoose.Schema({
         lowercase: true,
         trim: true,
         index: true,
+        validate: [validator.isEmail, "Please provide a valid email address"],
         sparse: true
-    },
-    password: {
-        type: String,
-        required: true,
-        trim: true,
-        minlength: 6,
-        select: false
     },
     // role: {
     //     type: String,
@@ -39,13 +49,18 @@ const UserSchema = new mongoose.Schema({
     // },
     phone: {
         type: String,
-        trim: true
+        trim: true,
+        unique: true
     },
     isActive: {
         type: Boolean,
         default: true
     },
     isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    isEmailVerified: {
       type: Boolean,
       default: false,
     },
