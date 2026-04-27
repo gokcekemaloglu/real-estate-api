@@ -28,17 +28,54 @@ app.use(express.json())
 // It converts form data into a JavaScript object and makes it available in req.body.
 app.use(express.urlencoded({ extended: true }))
 
-// RUN SERVER:
-app.listen(PORT, HOST, () => console.log(`Server running at http://${HOST}:${PORT}`))
+// res.getModelList middleware:
+app.use(require("./src/middlewares/queryHandler"))
+
 
 /* ------------------------------------------------------- */
 
+
+/* ----------------------------------- */
+// Routes:
+
+// HomePath:
+app.all('/', (req, res) => {
+    res.send({
+          error: false,
+          message: 'Welcome to BlogAPP API',
+          documents: {
+                swagger: '/documents/swagger',
+                redoc: '/documents/redoc',
+                json: '/documents/json',
+        },
+        // user: req.user
+    })
+})
+
+// Routes:
+app.use(require('./src/routes'))
+
+// Not Found
+// app.use('*', (req, res) => {
+//       res.status(404).json({
+//         error: true,
+//         message: '404 Not Found'
+//     })
+// })
 /*
 app.get("/", (req, res) => {
   res.send("Real Estate API running")
-})
+  })
+  
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+    })
+    */
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
-  */
+
+/* ----------------------------------- */
+
+// RUN SERVER:
+app.listen(PORT, HOST, () => console.log(`Server running at http://${HOST}:${PORT}`))
+
+/* ----------------------------------- */

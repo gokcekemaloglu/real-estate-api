@@ -55,7 +55,7 @@ const PropertySchema = new mongoose.Schema({
     },
     fullAddress: {
         type: String,
-        required: true,
+        // required: true,
         trim: true
     },
     grossArea:{
@@ -84,7 +84,8 @@ const PropertySchema = new mongoose.Schema({
     },
     heatingType: {
         type: String,
-        enum: ["central", "combi", "electric", "stove", "none"]
+        enum: ["central", "combi", "electric", "stove", "none"],
+        default: "none"
     },
     /*hasBalcony: {
         type: Boolean,
@@ -101,7 +102,7 @@ const PropertySchema = new mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true
+        // required: true
     },
     isActive: {
         type: Boolean,
@@ -126,7 +127,7 @@ const PropertySchema = new mongoose.Schema({
     ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Customer",
-        required: true,
+        // required: true,
         index: true
     }
 }, {
