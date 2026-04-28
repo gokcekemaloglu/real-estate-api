@@ -42,11 +42,6 @@ const UserSchema = new mongoose.Schema({
         validate: [validator.isEmail, "Please provide a valid email address"],
         sparse: true
     },
-    // role: {
-    //     type: String,
-    //     enum: ["admin", "agent", "customer"],
-    //     default: "customer"
-    // },
     phone: {
         type: String,
         trim: true,

@@ -5,6 +5,8 @@
 /* ------------------------------------------------- */
 
 const User = require("../models/user")
+
+const { mongoose } = require("../configs/dbConnection");
 /* ------------------------------------------------- *
 User Model requirements
 {
