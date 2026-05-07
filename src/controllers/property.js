@@ -10,6 +10,19 @@ const { mongoose } = require("../configs/dbConnection");
 
 module.exports = {
   list: async (req, res) => {
+    /*
+      #swagger.tags = ["Properties"]
+      #swagger.summary = "List Properties"
+      #swagger.description = `
+        You can use <u>filter[] & search[] & sort[] & page & limit</u> queries with endpoint.
+        <ul> Examples:
+          <li>URL/?<b>filter[field1]=value1&filter[field2]=value2</b></li>
+          <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>
+          <li>URL/?<b>sort[field1]=asc&sort[field2]=desc</b></li>
+          <li>URL/?<b>limit=10&page=1</b></li>
+        </ul>
+      `
+    */
     let customFilter = {};
     const data = await res.getModelList(Property, customFilter, "ownerId");
     const details = await res.getModelListDetails(Property);
@@ -24,6 +37,17 @@ module.exports = {
     });
   },
   create: async (req, res) => {
+    /*
+      #swagger.tags = ["Properties"]
+      #swagger.summary = "Create Property"
+      #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+          $ref: "#/definitions/Property"
+        }
+      }
+    */
     const data = await Property.create(req.body);
     res.status(201).send({
       error: false,
@@ -32,6 +56,10 @@ module.exports = {
     });
   },
   read: async (req, res) => {
+    /*
+      #swagger.tags = ["Properties"]
+      #swagger.summary = "Get Single Property"
+    */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).send({
@@ -52,6 +80,17 @@ module.exports = {
     });
   },
   update: async (req, res) => {
+    /*
+      #swagger.tags = ["Properties"]
+      #swagger.summary = "Update Property"
+      #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+          $ref: "#/definitions/Property"
+        }
+      }
+    */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).send({
@@ -100,6 +139,10 @@ module.exports = {
     });
   },
   delete: async (req, res) => {
+    /*
+      #swagger.tags = ["Properties"]
+      #swagger.summary = "Delete Property"
+    */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).send({
