@@ -1,5 +1,10 @@
 "use strict"
 
+/* ------------------------------------------------- */
+/*                  REAL ESTATE API                  */
+/* ------------------------------------------------- */
+
+
 const express = require("express")
 const app = express()
 
@@ -42,7 +47,7 @@ app.use(require("./src/middlewares/queryHandler"))
 app.all('/', (req, res) => {
     res.send({
           error: false,
-          message: 'Welcome to BlogAPP API',
+          message: 'Welcome to Real Estate API',
           documents: {
                 swagger: '/documents/swagger',
                 redoc: '/documents/redoc',
