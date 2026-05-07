@@ -1,0 +1,662 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Real Estate API",
+    "description": "Real Estate Backend API",
+    "contact": {
+      "name": "Gokce Kemalogl",
+      "email": "gokce.kemaloglu@gmail.com"
+    },
+    "license": {
+      "name": "ISC"
+    }
+  },
+  "host": "127.0.0.1:8000",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "Token": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization",
+      "description": "Simple Token Authentication * Example: <b>Token ...tokenKey...</b>"
+    },
+    "Bearer": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization",
+      "description": "JWT Authentication * Example: <b>Bearer ...accessToken...</b>"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/properties/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/properties/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/users/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Property": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "required": {
+              "type": "boolean",
+              "example": true
+            },
+            "trim": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "description": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "required": {
+              "type": "boolean",
+              "example": true
+            },
+            "trim": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "price": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "required": {
+              "type": "boolean",
+              "example": true
+            },
+            "min": {
+              "type": "number",
+              "example": 0
+            },
+            "index": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "listingType": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "enum": {
+              "type": "array",
+              "example": [
+                "sale",
+                "rent"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "required": {
+              "type": "boolean",
+              "example": true
+            },
+            "index": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "propertyType": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "enum": {
+              "type": "array",
+              "example": [
+                "apartment",
+                "house",
+                "villa",
+                "land",
+                "commercial"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "required": {
+              "type": "boolean",
+              "example": true
+            },
+            "index": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "city": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "required": {
+              "type": "boolean",
+              "example": true
+            },
+            "trim": {
+              "type": "boolean",
+              "example": true
+            },
+            "index": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "district": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "required": {
+              "type": "boolean",
+              "example": true
+            },
+            "trim": {
+              "type": "boolean",
+              "example": true
+            },
+            "index": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "neighbourhood": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "required": {
+              "type": "boolean",
+              "example": true
+            },
+            "trim": {
+              "type": "boolean",
+              "example": true
+            },
+            "index": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "fullAddress": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "trim": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "grossArea": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "min": {
+              "type": "number",
+              "example": 0
+            }
+          }
+        },
+        "netArea": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "min": {
+              "type": "number",
+              "example": 0
+            }
+          }
+        },
+        "floor": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "min": {
+              "type": "number",
+              "example": 0
+            }
+          }
+        },
+        "totalFloors": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "min": {
+              "type": "number",
+              "example": 0
+            }
+          }
+        },
+        "roomCount": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "trim": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "buildingAge": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "min": {
+              "type": "number",
+              "example": 0
+            }
+          }
+        },
+        "heatingType": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "enum": {
+              "type": "array",
+              "example": [
+                "central",
+                "combi",
+                "electric",
+                "stove",
+                "none"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "default": {
+              "type": "string",
+              "example": "none"
+            }
+          }
+        },
+        "hasElevator": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "default": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        },
+        "hasParking": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "default": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        },
+        "createdBy": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "ref": {
+              "type": "string",
+              "example": "User"
+            }
+          }
+        },
+        "isActive": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "default": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "isFeatured": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "default": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        },
+        "viewCount": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "default": {
+              "type": "number",
+              "example": 0
+            }
+          }
+        },
+        "favouritesCount": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "default": {
+              "type": "number",
+              "example": 0
+            }
+          }
+        },
+        "isLoanEligible": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "default": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "ownerId": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "ref": {
+              "type": "string",
+              "example": "Customer"
+            },
+            "index": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "Token": []
+    },
+    {
+      "Bearer": []
+    }
+  ]
+}
