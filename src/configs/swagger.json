@@ -41,7 +41,11 @@
   "paths": {
     "/properties/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Properties"
+        ],
+        "summary": "List Properties",
+        "description": "\r  You can use <u>filter[] & search[] & sort[] & page & limit</u> queries with endpoint.\r  <ul> Examples:\r  <li>URL/?<b>filter[field1]=value1&filter[field2]=value2</b></li>\r  <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>\r  <li>URL/?<b>sort[field1]=asc&sort[field2]=desc</b></li>\r  <li>URL/?<b>limit=10&page=1</b></li>\r  </ul>\r  ",
         "responses": {
           "200": {
             "description": "OK"
@@ -49,7 +53,21 @@
         }
       },
       "post": {
+        "tags": [
+          "Properties"
+        ],
+        "summary": "Create Property",
         "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Property"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created"
@@ -59,6 +77,10 @@
     },
     "/properties/{id}": {
       "get": {
+        "tags": [
+          "Properties"
+        ],
+        "summary": "Get Single Property",
         "description": "",
         "parameters": [
           {
@@ -81,6 +103,10 @@
         }
       },
       "put": {
+        "tags": [
+          "Properties"
+        ],
+        "summary": "Update Property",
         "description": "",
         "parameters": [
           {
@@ -88,6 +114,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Property"
+            }
           }
         ],
         "responses": {
@@ -103,6 +137,10 @@
         }
       },
       "delete": {
+        "tags": [
+          "Properties"
+        ],
+        "summary": "Delete Property",
         "description": "",
         "parameters": [
           {
@@ -125,6 +163,10 @@
         }
       },
       "patch": {
+        "tags": [
+          "Properties"
+        ],
+        "summary": "Update Property",
         "description": "",
         "parameters": [
           {
@@ -132,6 +174,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Property"
+            }
           }
         ],
         "responses": {
