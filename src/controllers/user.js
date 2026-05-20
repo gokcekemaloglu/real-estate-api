@@ -65,14 +65,13 @@ module.exports = {
         }
       }
     */
-    const newUser = await User.create({
+    const data = await User.create({
       userName: req.body.userName,
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
       password: req.body.password
     });
-    const data = await User.create({newUser});
     
     res.status(201).send({
       error: false,
