@@ -126,21 +126,9 @@ module.exports = {
         message: "Invalid ID format",
       });
     }
-    const allowedFields = [
-      "userName",
-      "password",
-      "email",
-      "firstName",
-      "lastName",
-      "isAdmin",
-    ];
-    const filteredBody = {};
-    for (let key in req.body) {
-      if (allowedFields.includes(key)) {
-        filteredBody[key] = req.body[key];
-      }
-    }
-    const data = await User.findOneAndUpdate({ _id: id }, filteredBody, {
+    const {_id, password, ...updatedData} = req.body
+
+    const data = await User.updateOne({_id: req.params.id}, updatedData, {
       returnDocument: "after",
       runValidators: true,
     });
@@ -150,11 +138,21 @@ module.exports = {
         message: "User not found",
       });
     }
-    res.status(200).send({
-      error: false,
-      message: "User updated successfully",
-      data,
-    });
+    if (data.modifiedCount) {
+      
+      res.status(200).send({
+        error: false,
+        message: "User updated successfully",
+        data,
+        new: await User.findOne({_id: req.params.id})
+      });
+    } else {
+      res.status(200).send({
+        error: false,
+        message: "This user is not found or there is no change in the data",
+        data,
+      });
+    }
   },
   delete: async (req, res) => {
     /* 
@@ -185,65 +183,126 @@ module.exports = {
       data,
     });
   },
-  changeUserStatus: async (req, res) => {
-    /* 
-      #swagger.tags = ["Users"]
-      #swagger.summary = "Change User Status"
-    */
+  // changeUserStatus: async (req, res) => {
+  //   /* 
+  //     #swagger.tags = ["Users"]
+  //     #swagger.summary = "Change User Status"
+  //   */
 
-    const userId = req.user.isAdmin ? req.params.id : req.user._id;
+  //   const userId = req.user.isAdmin ? req.params.id : req.user._id;
 
-    const user = await User.findOne({ _id: userId });
+  //   const user = await User.findOne({ _id: userId });
 
-    if (!user) {
-      return res.status(404).send({
-        error: true,
-        message: req.t(translations.user.notFound),
-      });
-    }
+  //   if (!user) {
+  //     return res.status(404).send({
+  //       error: true,
+  //       message: req.t(translations.user.notFound),
+  //     });
+  //   }
 
-    user.isActive = !user.isActive;
-    await user.save();
+  //   user.isActive = !user.isActive;
+  //   await user.save();
 
-    // If the user is deactivated:
-    if (!user.isActive) {
-      const appointments = await Appointment.find({ userId: user._id });
+  //   // If the user is deactivated:
+  //   if (!user.isActive) {
+  //     const appointments = await Appointment.find({ userId: user._id });
 
-      // Delete all appointments related to the user
-      await Appointment.deleteMany({ userId: user._id });
-      for (const appointment of appointments) {
-        await TherapistTimeTable.updateOne(
-          { therapistId: appointment.therapistId },
-          {
-            $pull: {
-              unavailableDates: {
-                date: appointment.appointmentDate,
-                startTime: appointment.startTime,
-                endTime: appointment.endTime,
-              },
-            },
-          }
-        );
-      }
-    }
+  //     // Delete all appointments related to the user
+  //     await Appointment.deleteMany({ userId: user._id });
+  //     for (const appointment of appointments) {
+  //       await TherapistTimeTable.updateOne(
+  //         { therapistId: appointment.therapistId },
+  //         {
+  //           $pull: {
+  //             unavailableDates: {
+  //               date: appointment.appointmentDate,
+  //               startTime: appointment.startTime,
+  //               endTime: appointment.endTime,
+  //             },
+  //           },
+  //         }
+  //       );
+  //     }
+  //   }
 
-    const message = deleteAccountEmail(user.userName);
+  //   const message = deleteAccountEmail(user.userName);
 
-    await sendEmail({
-      email: user.email,
-      subject:
-        "Your Soul Journey Account Has Been Deleted – Come Back to Soul Journey Anytime",
-      message,
-    });
+  //   await sendEmail({
+  //     email: user.email,
+  //     subject:
+  //       "Your Soul Journey Account Has Been Deleted – Come Back to Soul Journey Anytime",
+  //     message,
+  //   });
 
-    res.status(200).send({
-      error: false,
-      message: req.t(translations.user.statusChanged, {
-        status: user.isActive
-          ? req.t(translations.user.active)
-          : req.t(translations.user.disabled),
-      }),
-      data: user,
-    });
-  },
+  //   res.status(200).send({
+  //     error: false,
+  //     message: req.t(translations.user.statusChanged, {
+  //       status: user.isActive
+  //         ? req.t(translations.user.active)
+  //         : req.t(translations.user.disabled),
+  //     }),
+  //     data: user,
+  //   });
+  // },
+  // changeMyPassword: async (req, res) => {
+  //   /* 
+  //       #swagger.tags = ["Users"]
+  //       #swagger.summary = "Update User"
+  //       #swagger.parameters['body'] = {
+  //           in: 'body',
+  //           required: true,
+  //           schema: {
+  //               "currentPassword": "***",
+  //               "newPassword": "***",
+  //               "retypePassword": "***",
+  //           }
+  //       }
+  //   */
+
+  //   const { currentPassword, newPassword, retypePassword } = req.body;
+
+  //   if (!currentPassword || !newPassword || !retypePassword) {
+  //     throw new CustomError(req.t(translations.user.passwordFieldsRequired));
+  //   }
+
+  //   const user = await User.findOne({ _id: req.user._id });
+
+  //   if (!user) {
+  //     throw new CustomError(req.t(translations.user.notFound), 404);
+  //   }
+
+  //   const isPasswordCorrect = await user.correctPassword(
+  //     currentPassword,
+  //     user?.password
+  //   );
+
+  //   if (!isPasswordCorrect) {
+  //     throw new CustomError(
+  //       req.t(translations.user.currentPasswordIncorrect),
+  //       401
+  //     );
+  //   }
+
+  //   if (newPassword !== retypePassword) {
+  //     throw new CustomError(req.t(translations.user.passwordsDontMatch), 401);
+  //   }
+
+  //   user.password = newPassword;
+
+  //   await user.save();
+
+  //   const message = changePasswordEmail(user.userName);
+
+  //   await sendEmail({
+  //     email: user.email,
+  //     subject: req.t(translations.user.passwordChangeSuccess), // "Password Changed",
+  //     message,
+  //   });
+
+  //   res.status(201).send({
+  //     error: false,
+  //     message: req.t(translations.user.passwordChangeSuccess),
+  //     data: user,
+  //   });
+  // },
 };
