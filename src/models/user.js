@@ -7,6 +7,7 @@
 const {mongoose} = require("../configs/dbConnection")
 const validator = require("validator")
 const validatePassword = require("../helpers/validatePassword")
+const bcrypt = require("bcrypt")
 
 const UserSchema = new mongoose.Schema({
     userName: {
@@ -63,5 +64,7 @@ const UserSchema = new mongoose.Schema({
     collection: "users",
     timestamps: true
 })
+
+// Hash password before saving
 
 module.exports = mongoose.model("User", UserSchema)
