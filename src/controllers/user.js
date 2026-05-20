@@ -128,7 +128,7 @@ module.exports = {
     }
     const {_id, password, ...updatedData} = req.body
 
-    const data = await User.updateOne({_id: req.params.id}, updatedData, {
+    const data = await User.findOneAndUpdate({_id: id}, updatedData, {
       returnDocument: "after",
       runValidators: true,
     });
@@ -144,7 +144,7 @@ module.exports = {
         error: false,
         message: "User updated successfully",
         data,
-        new: await User.findOne({_id: req.params.id})
+        // new: await User.findOne({_id: req.params.id})
       });
     } else {
       res.status(200).send({
