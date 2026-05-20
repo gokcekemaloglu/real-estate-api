@@ -1,14 +1,14 @@
-"use strict"
+"use strict";
 
 /* ------------------------------------------------- */
 /*                  REAL ESTATE API                  */
 /* ------------------------------------------------- */
 
-const {mongoose} = require("../configs/dbConnection")
-const validator = require("validator")
-const validatePassword = require("../helpers/validatePassword")
-const bcrypt = require("bcrypt")
-const {comparePassword} = require("../helpers/methodHelper")
+const { mongoose } = require("../configs/dbConnection");
+const validator = require("validator");
+const validatePassword = require("../helpers/validatePassword");
+const bcrypt = require("bcrypt");
+const { comparePassword } = require("../helpers/methodHelper");
 
 /* ------------------------------------------------------- *
 User Model requirements
@@ -21,7 +21,8 @@ User Model requirements
 }
 /* ------------------------------------------------------- */
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema(
+  {
     userName: {
       type: String,
       required: [true, "Username is required"],
@@ -30,35 +31,40 @@ const UserSchema = new mongoose.Schema({
       index: true,
     },
     password: {
-        type: String,
-        required: [true, "Password is required"],
-        trim: true,
-        validate: {validator: validatePassword, message: "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character"},
-        select: false
+      type: String,
+      required: [true, "Password is required"],
+      trim: true,
+      validate: {
+        validator: validatePassword,
+        message:
+          "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+      },
+      select: false,
     },
     firstName: {
-        type: String,
-        required: [true, "First name is required"],
-        trim: true
+      type: String,
+      required: [true, "First name is required"],
+      trim: true,
     },
     lastName: {
-        type: String,
-        required: [true, "Last name is required"],
-        trim: true
+      type: String,
+      required: [true, "Last name is required"],
+      trim: true,
     },
     email: {
-        type: String,
-        unique: true,
-        lowercase: true,
-        trim: true,
-        index: true,
-        validate: [validator.isEmail, "Please provide a valid email address"],
-        sparse: true
+      type: String,
+      unique: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+      validate: [validator.isEmail, "Please provide a valid email address"],
+      sparse: true,
     },
     phone: {
-        type: String,
-        trim: true,
-        unique: true
+      type: String,
+      trim: true,
+      unique: true,
+      sparse: true,
     },
     address: {
       type: String,
@@ -66,8 +72,8 @@ const UserSchema = new mongoose.Schema({
       default: "",
     },
     isActive: {
-        type: Boolean,
-        default: true
+      type: Boolean,
+      default: true,
     },
     isAdmin: {
       type: Boolean,
@@ -77,21 +83,21 @@ const UserSchema = new mongoose.Schema({
       type: Boolean,
       default: false,
     },
-}, {
+  },
+  {
     collection: "users",
-    timestamps: true
-})
+    timestamps: true,
+  },
+);
 
 // Hash password before saving
-UserSchema.pre("save", async function(next) {
-    if (this.isModified("password")) {
-// console.log(bcrypt);
+UserSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    // console.log(bcrypt);
+    this.password = await bcrypt.hash(this.password, 12);
+  }
+});
 
-    
-    this.password = await bcrypt.hash(this.password, 12)
-    }
-})
+UserSchema.methods.currentPassword = comparePassword;
 
-UserSchema.methods.currentPassword = comparePassword
-
-module.exports = mongoose.model("User", UserSchema)
+module.exports = mongoose.model("User", UserSchema);
