@@ -9,6 +9,17 @@ const validator = require("validator")
 const validatePassword = require("../helpers/validatePassword")
 const bcrypt = require("bcrypt")
 
+/* ------------------------------------------------------- *
+User Model requirements
+{
+    "userName": "admin",
+    "password": "aA?123456",
+    "email": "admin@site.com",
+    "firstName": "admin",
+    "lastName": "admin"
+}
+/* ------------------------------------------------------- */
+
 const UserSchema = new mongoose.Schema({
     userName: {
       type: String,
@@ -47,6 +58,11 @@ const UserSchema = new mongoose.Schema({
         type: String,
         trim: true,
         unique: true
+    },
+    address: {
+      type: String,
+      trim: true,
+      default: "",
     },
     isActive: {
         type: Boolean,
