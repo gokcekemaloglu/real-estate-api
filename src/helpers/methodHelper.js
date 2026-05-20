@@ -13,7 +13,7 @@ const bcrypt = require("bcrypt")
  * @param {string} userPassword - The hashed password stored in the database.
  * @returns {Promise<boolean>} - Returns true if passwords match, false otherwise.
 */
-const comparePassword = (candidatePassword, userPassword) => {
+const comparePassword = async (candidatePassword, userPassword) => {
     return await bcrypt.compare(candidatePassword, userPassword)
 }
 

@@ -8,6 +8,7 @@ const {mongoose} = require("../configs/dbConnection")
 const validator = require("validator")
 const validatePassword = require("../helpers/validatePassword")
 const bcrypt = require("bcrypt")
+const {comparePassword} = require("../helpers/methodHelper")
 
 /* ------------------------------------------------------- *
 User Model requirements
@@ -83,14 +84,16 @@ const UserSchema = new mongoose.Schema({
 
 // Hash password before saving
 UserSchema.pre("save", async function(next) {
-    if (!this.isModified("password")) return next()
-    try {
-        const salt = await bcrypt.genSalt(12)
-        this.password = await bcrypt.hash(this.password, salt)
-        next()
-    } catch (err) {
-        next(err)
+    if (this.isModified("password")) {
+// console.log(bcrypt);
+
+    
+    this.password = await bcrypt.hash(this.password, 12)
     }
+    next()
+    
 })
+
+UserSchema.methods.currentPassword = comparePassword
 
 module.exports = mongoose.model("User", UserSchema)
