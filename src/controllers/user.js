@@ -213,65 +213,57 @@ module.exports = {
     });
   },
 
-  // changeMyPassword: async (req, res) => {
-  //   /* 
-  //       #swagger.tags = ["Users"]
-  //       #swagger.summary = "Update User"
-  //       #swagger.parameters['body'] = {
-  //           in: 'body',
-  //           required: true,
-  //           schema: {
-  //               "currentPassword": "***",
-  //               "newPassword": "***",
-  //               "retypePassword": "***",
-  //           }
-  //       }
-  //   */
+  changeMyPassword: async (req, res) => {
+    /* 
+        #swagger.tags = ["Users"]
+        #swagger.summary = "Update User"
+        #swagger.parameters['body'] = {
+            in: 'body',
+            required: true,
+            schema: {
+                "currentPassword": "***",
+                "newPassword": "***",
+                "retypePassword": "***",
+            }
+        }
+    */
 
-  //   const { currentPassword, newPassword, retypePassword } = req.body;
+    const { currentPassword, newPassword, retypePassword } = req.body;
 
-  //   if (!currentPassword || !newPassword || !retypePassword) {
-  //     throw new CustomError(req.t(translations.user.passwordFieldsRequired));
-  //   }
+    if (!currentPassword || !newPassword || !retypePassword) {
+      throw new Error("req.t(translations.user.passwordFieldsRequired)");
+    }
 
-  //   const user = await User.findOne({ _id: req.user._id });
+    const user = await User.findOne({ _id: req.user._id });
 
-  //   if (!user) {
-  //     throw new CustomError(req.t(translations.user.notFound), 404);
-  //   }
+    if (!user) {
+      throw new Error("req.t(translations.user.notFound)");
+    }
 
-  //   const isPasswordCorrect = await user.correctPassword(
-  //     currentPassword,
-  //     user?.password
-  //   );
+    const isPasswordCorrect = await user.correctPassword(
+      currentPassword,
+      user?.password
+    );
 
-  //   if (!isPasswordCorrect) {
-  //     throw new CustomError(
-  //       req.t(translations.user.currentPasswordIncorrect),
-  //       401
-  //     );
-  //   }
+    if (!isPasswordCorrect) {
+      throw new Error(
+        "req.t(translations.user.currentPasswordIncorrect)",
+        401
+      );
+    }
 
-  //   if (newPassword !== retypePassword) {
-  //     throw new CustomError(req.t(translations.user.passwordsDontMatch), 401);
-  //   }
+    if (newPassword !== retypePassword) {
+      throw new Error("req.t(translations.user.passwordsDontMatch)", 401);
+    }
 
-  //   user.password = newPassword;
+    user.password = newPassword;
 
-  //   await user.save();
+    await user.save();
 
-  //   const message = changePasswordEmail(user.userName);
-
-  //   await sendEmail({
-  //     email: user.email,
-  //     subject: req.t(translations.user.passwordChangeSuccess), // "Password Changed",
-  //     message,
-  //   });
-
-  //   res.status(201).send({
-  //     error: false,
-  //     message: req.t(translations.user.passwordChangeSuccess),
-  //     data: user,
-  //   });
-  // },
+    res.status(201).send({
+      error: false,
+      message: "req.t(translations.user.passwordChangeSuccess)",
+      data: user,
+    });
+  },
 };
