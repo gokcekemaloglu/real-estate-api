@@ -154,10 +154,31 @@ module.exports = {
       });
     }
   },
-  delete: async (req, res) => {
+  delete: async(req, res) => {
     /* 
       #swagger.tags = ["Users"]
       #swagger.summary = "Delete User"
+    */
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).send({
+        error: true,
+        message: "Invalid ID format",
+      });
+    }
+    const data = await User.deleteOne({ _id: req.params.id });
+    res.status(data.deletedCount ? 204 : 404).send({
+      error: !data.deletedCount,
+      message: data.deletedCount
+        ? "User deleted successfully"
+        : "User not found",
+      data,
+    });
+  },
+  changeUserStatus: async (req, res) => {
+    /* 
+      #swagger.tags = ["Users"]
+      #swagger.summary = "Change User Status"
     */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -183,67 +204,7 @@ module.exports = {
       data,
     });
   },
-  // changeUserStatus: async (req, res) => {
-  //   /* 
-  //     #swagger.tags = ["Users"]
-  //     #swagger.summary = "Change User Status"
-  //   */
 
-  //   const userId = req.user.isAdmin ? req.params.id : req.user._id;
-
-  //   const user = await User.findOne({ _id: userId });
-
-  //   if (!user) {
-  //     return res.status(404).send({
-  //       error: true,
-  //       message: req.t(translations.user.notFound),
-  //     });
-  //   }
-
-  //   user.isActive = !user.isActive;
-  //   await user.save();
-
-  //   // If the user is deactivated:
-  //   if (!user.isActive) {
-  //     const appointments = await Appointment.find({ userId: user._id });
-
-  //     // Delete all appointments related to the user
-  //     await Appointment.deleteMany({ userId: user._id });
-  //     for (const appointment of appointments) {
-  //       await TherapistTimeTable.updateOne(
-  //         { therapistId: appointment.therapistId },
-  //         {
-  //           $pull: {
-  //             unavailableDates: {
-  //               date: appointment.appointmentDate,
-  //               startTime: appointment.startTime,
-  //               endTime: appointment.endTime,
-  //             },
-  //           },
-  //         }
-  //       );
-  //     }
-  //   }
-
-  //   const message = deleteAccountEmail(user.userName);
-
-  //   await sendEmail({
-  //     email: user.email,
-  //     subject:
-  //       "Your Soul Journey Account Has Been Deleted – Come Back to Soul Journey Anytime",
-  //     message,
-  //   });
-
-  //   res.status(200).send({
-  //     error: false,
-  //     message: req.t(translations.user.statusChanged, {
-  //       status: user.isActive
-  //         ? req.t(translations.user.active)
-  //         : req.t(translations.user.disabled),
-  //     }),
-  //     data: user,
-  //   });
-  // },
   // changeMyPassword: async (req, res) => {
   //   /* 
   //       #swagger.tags = ["Users"]

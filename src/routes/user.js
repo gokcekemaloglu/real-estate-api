@@ -16,4 +16,7 @@ router.route("/:id")
     .patch(user.update)
     .delete(user.delete)
 
+router.route("/:id/status")
+    .patch(user.changeUserStatus)
+
 module.exports = router
