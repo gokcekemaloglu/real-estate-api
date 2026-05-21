@@ -167,7 +167,7 @@ module.exports = {
       });
     }
     const data = await User.deleteOne({ _id: req.params.id });
-    res.status(data.deletedCount ? 204 : 404).send({
+    res.status(data.deletedCount ? 200 : 404).send({
       error: !data.deletedCount,
       message: data.deletedCount
         ? "User deleted successfully"
@@ -178,7 +178,8 @@ module.exports = {
   changeUserStatus: async (req, res) => {
     /* 
       #swagger.tags = ["Users"]
-      #swagger.summary = "Change User Status"
+      #swagger.summary = "Toggle User Status (Active/Inactive)"
+      #swagger.description = "Toggles user's isActive status. If active becomes inactive, if inactive becomes active."
     */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -187,20 +188,27 @@ module.exports = {
         message: "Invalid ID format",
       });
     }
-    const data = await User.findOneAndUpdate(
-      { _id: id },
-      { isActive: false, isAdmin: false },
-      { returnDocument: "after", runValidators: true },
-    );
-    if (!data) {
+    
+    // Find the user by ID
+    const user = await User.findOne({_id: id})
+
+    if (!user) {
       return res.status(404).send({
         error: true,
         message: "User not found",
       });
     }
+
+    // Toggle the isActive status
+    const newStatus = !(user.isActive);
+    const data = await User.findOneAndUpdate(
+      { _id: id },
+      { isActive: newStatus },
+      { returnDocument: "after", runValidators: true }
+    );
     res.status(200).send({
       error: false,
-      message: "User is inactive now",
+      message: `User status changed successfully. User is now ${data.isActive ? "active" : "inactive"}.`,
       data,
     });
   },
