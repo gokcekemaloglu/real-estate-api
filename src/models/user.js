@@ -98,6 +98,6 @@ UserSchema.pre("save", async function (next) {
   }
 });
 
-UserSchema.methods.currentPassword = comparePassword;
+UserSchema.methods.correctPassword = comparePassword;
 
 module.exports = mongoose.model("User", UserSchema);

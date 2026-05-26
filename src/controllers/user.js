@@ -10,13 +10,13 @@ const { mongoose } = require("../configs/dbConnection");
 /* ------------------------------------------------- *
 User Model requirements
 {
-    "userName": "admin",
-    "password": "aA?123456",
-    "email": "admin@site.com",
-    "firstName": "admin",
-    "lastName": "admin",
-    "isActive": true,
-    "isAdmin": true
+  "userName": "admin",
+  "password": "aA?123456",
+  "email": "admin@site.com",
+  "firstName": "admin",
+  "lastName": "admin",
+  "isActive": true,
+  "isAdmin": true
 }
 /* ------------------------------------------------- */
 
@@ -212,20 +212,19 @@ module.exports = {
       data,
     });
   },
-
   changeMyPassword: async (req, res) => {
     /* 
-        #swagger.tags = ["Users"]
-        #swagger.summary = "Update User"
-        #swagger.parameters['body'] = {
-            in: 'body',
-            required: true,
-            schema: {
-                "currentPassword": "***",
-                "newPassword": "***",
-                "retypePassword": "***",
-            }
+      #swagger.tags = ["Users"]
+      #swagger.summary = "Update User"
+      #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+          "currentPassword": "***",
+          "newPassword": "***",
+          "retypePassword": "***",
         }
+      }
     */
 
     const { currentPassword, newPassword, retypePassword } = req.body;
