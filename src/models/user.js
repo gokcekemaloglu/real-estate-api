@@ -57,7 +57,7 @@ const UserSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       index: true,
-      validate: [validator.isEmail, "Please provide a valid email address"],
+      validate: [validator.isEmail, "Please provide a valid e-mail address"],
       sparse: true,
     },
     phone: {

@@ -7,6 +7,7 @@
 const User = require("../models/user");
 
 const { mongoose } = require("../configs/dbConnection");
+const CustomError = require("../errors/customErrors");
 /* ------------------------------------------------- *
 User Model requirements
 {
@@ -230,13 +231,13 @@ module.exports = {
     const { currentPassword, newPassword, retypePassword } = req.body;
 
     if (!currentPassword || !newPassword || !retypePassword) {
-      throw new Error("req.t(translations.user.passwordFieldsRequired)");
+      throw new CustomError("Password Fields Required");
     }
 
     const user = await User.findOne({ _id: req.user._id });
 
     if (!user) {
-      throw new Error("req.t(translations.user.notFound)");
+      throw new CustomError("User not found");
     }
 
     const isPasswordCorrect = await user.correctPassword(
@@ -245,14 +246,14 @@ module.exports = {
     );
 
     if (!isPasswordCorrect) {
-      throw new Error(
-        "req.t(translations.user.currentPasswordIncorrect)",
+      throw new CustomError(
+        "Current password is incorrect",
         401
       );
     }
 
     if (newPassword !== retypePassword) {
-      throw new Error("req.t(translations.user.passwordsDontMatch)", 401);
+      throw new CustomError("New passwords do not match", 401);
     }
 
     user.password = newPassword;
@@ -261,7 +262,7 @@ module.exports = {
 
     res.status(201).send({
       error: false,
-      message: "req.t(translations.user.passwordChangeSuccess)",
+      message: "Password changed successfully",
       data: user,
     });
   },
