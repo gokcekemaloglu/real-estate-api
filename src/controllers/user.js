@@ -240,16 +240,10 @@ module.exports = {
       throw new CustomError("User not found");
     }
 
-    const isPasswordCorrect = await user.correctPassword(
-      currentPassword,
-      user?.password
-    );
+    const isPasswordCorrect = await user.correctPassword(currentPassword, user?.password);
 
     if (!isPasswordCorrect) {
-      throw new CustomError(
-        "Current password is incorrect",
-        401
-      );
+      throw new CustomError("Current password is incorrect", 401);
     }
 
     if (newPassword !== retypePassword) {
