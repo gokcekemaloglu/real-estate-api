@@ -10,7 +10,7 @@ module.exports = (err, req, res, next) => {
 
   return res.status(res?.errorStatusCode || 400).send({
     error: true,
-    message: err.message,
+    message: err.message || "An Internal Server error occurred",
     cause: err.cause,
     body: req.body,
     // stack: err.stack
