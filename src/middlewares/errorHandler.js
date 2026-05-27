@@ -6,13 +6,15 @@
 // app.use(errorHandler):
 
 module.exports = (err, req, res, next) => {
-  console.log(err);
+  console.log("ErrorHandler caught:", err);
 
-  return res.status(res?.errorStatusCode || 400).send({
+  const statusCode = err.statusCode || res?.errorStatusCode || 500;
+
+  return res.status(statusCode).send({
     error: true,
     message: err.message || "An Internal Server error occurred",
     cause: err.cause,
     body: req.body,
-    // stack: process.env.NODE_ENV === "development" ? err.stack : null
+    // stack: process.env.NODE_ENV === "development" ? err.stack : undefined
   });
 };
