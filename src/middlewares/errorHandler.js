@@ -13,6 +13,6 @@ module.exports = (err, req, res, next) => {
     message: err.message || "An Internal Server error occurred",
     cause: err.cause,
     body: req.body,
-    // stack: err.stack
+    // stack: process.env.NODE_ENV === "development" ? err.stack : null
   });
 };
