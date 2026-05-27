@@ -87,17 +87,11 @@ module.exports = {
     */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
-        error: true,
-        message: "Invalid ID format",
-      });
+      throw new CustomError("Invalid ID format", 400);
     }
     const data = await User.findOne({ _id: id });
     if (!data) {
-      return res.status(404).send({
-        error: true,
-        message: "User not found",
-      });
+      throw new CustomError("User not found", 404);
     }
     res.status(200).send({
       error: false,
@@ -122,10 +116,7 @@ module.exports = {
     */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
-        error: true,
-        message: "Invalid ID format",
-      });
+      throw new CustomError("Invalid ID format", 400);
     }
     const {_id, password, ...updatedData} = req.body
 
@@ -134,10 +125,7 @@ module.exports = {
       runValidators: true,
     });
     if (!data) {
-      return res.status(404).send({
-        error: true,
-        message: "User not found",
-      });
+      throw new CustomError("User not found", 404);
     }
     if (data.modifiedCount) {
       
@@ -162,12 +150,9 @@ module.exports = {
     */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
-        error: true,
-        message: "Invalid ID format",
-      });
+      throw new CustomError("Invalid ID format", 400);
     }
-    const data = await User.deleteOne({ _id: req.params.id });
+    const data = await User.deleteOne({ _id: id });
     res.status(data.deletedCount ? 200 : 404).send({
       error: !data.deletedCount,
       message: data.deletedCount
@@ -184,20 +169,14 @@ module.exports = {
     */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
-        error: true,
-        message: "Invalid ID format",
-      });
+      throw new CustomError("Invalid ID format", 400);
     }
     
     // Find the user by ID
     const user = await User.findOne({_id: id})
 
     if (!user) {
-      return res.status(404).send({
-        error: true,
-        message: "User not found",
-      });
+      throw new CustomError("User not found", 404);
     }
 
     // Toggle the isActive status
