@@ -80,12 +80,6 @@ app.get("/", (req, res) => {
 
 /* ----------------------------------- */
 
-// errorHandler:
-app.use(require("./src/middlewares/errorHandler"));
-
-/* ------------------------------------------------------- */
-
-
 // RUN SERVER:
 app.listen(PORT, HOST, () => console.log(`Server running at http://${HOST}:${PORT}`))
 

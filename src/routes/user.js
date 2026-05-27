@@ -19,7 +19,4 @@ router.route("/:id")
 router.route("/:id/status")
     .patch(user.changeUserStatus)
 
-router.route("/:id/changeMyPassword")
-    .patch(user.changeMyPassword);
-
 module.exports = router

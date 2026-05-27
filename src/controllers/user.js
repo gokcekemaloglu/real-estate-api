@@ -7,17 +7,16 @@
 const User = require("../models/user");
 
 const { mongoose } = require("../configs/dbConnection");
-const CustomError = require("../errors/customErrors");
 /* ------------------------------------------------- *
 User Model requirements
 {
-  "userName": "admin",
-  "password": "aA?123456",
-  "email": "admin@site.com",
-  "firstName": "admin",
-  "lastName": "admin",
-  "isActive": true,
-  "isAdmin": true
+    "userName": "admin",
+    "password": "aA?123456",
+    "email": "admin@site.com",
+    "firstName": "admin",
+    "lastName": "admin",
+    "isActive": true,
+    "isAdmin": true
 }
 /* ------------------------------------------------- */
 
@@ -130,30 +129,22 @@ module.exports = {
     const {_id, password, ...updatedData} = req.body
 
     const data = await User.findOneAndUpdate({_id: id}, updatedData, {
-      returnDocument: "after",
+      new: true,
       runValidators: true,
     });
+    
     if (!data) {
       return res.status(404).send({
         error: true,
         message: "User not found",
       });
     }
-    if (data.modifiedCount) {
-      
-      res.status(200).send({
-        error: false,
-        message: "User updated successfully",
-        data,
-        // new: await User.findOne({_id: req.params.id})
-      });
-    } else {
-      res.status(200).send({
-        error: false,
-        message: "This user is not found or there is no change in the data",
-        data,
-      });
-    }
+    
+    res.status(200).send({
+      error: false,
+      message: "User updated successfully",
+      data,
+    });
   },
   delete: async(req, res) => {
     /* 
@@ -168,12 +159,17 @@ module.exports = {
       });
     }
     const data = await User.deleteOne({ _id: req.params.id });
-    res.status(data.deletedCount ? 200 : 404).send({
-      error: !data.deletedCount,
-      message: data.deletedCount
-        ? "User deleted successfully"
-        : "User not found",
-      data,
+    
+    if (!data.deletedCount) {
+      return res.status(404).send({
+        error: true,
+        message: "User not found",
+      });
+    }
+    
+    res.status(200).send({
+      error: false,
+      message: "User deleted successfully",
     });
   },
   changeUserStatus: async (req, res) => {
@@ -190,74 +186,91 @@ module.exports = {
       });
     }
     
-    // Find the user by ID
-    const user = await User.findOne({_id: id})
-
+    // First, find the user to get current status
+    const user = await User.findOne({ _id: id });
+    
     if (!user) {
       return res.status(404).send({
         error: true,
         message: "User not found",
       });
     }
-
+    
     // Toggle the isActive status
-    const newStatus = !(user.isActive);
+    const newStatus = !user.isActive;
+    
     const data = await User.findOneAndUpdate(
       { _id: id },
       { isActive: newStatus },
-      { returnDocument: "after", runValidators: true }
+      { new: true, runValidators: true },
     );
+    
     res.status(200).send({
       error: false,
-      message: `User status changed successfully. User is now ${data.isActive ? "active" : "inactive"}.`,
+      message: newStatus ? "User is active now" : "User is inactive now",
       data,
     });
   },
-  changeMyPassword: async (req, res) => {
-    /* 
-      #swagger.tags = ["Users"]
-      #swagger.summary = "Update User"
-      #swagger.parameters['body'] = {
-        in: 'body',
-        required: true,
-        schema: {
-          "currentPassword": "***",
-          "newPassword": "***",
-          "retypePassword": "***",
-        }
-      }
-    */
 
-    const { currentPassword, newPassword, retypePassword } = req.body;
+  // changeMyPassword: async (req, res) => {
+  //   /* 
+  //       #swagger.tags = ["Users"]
+  //       #swagger.summary = "Update User"
+  //       #swagger.parameters['body'] = {
+  //           in: 'body',
+  //           required: true,
+  //           schema: {
+  //               "currentPassword": "***",
+  //               "newPassword": "***",
+  //               "retypePassword": "***",
+  //           }
+  //       }
+  //   */
 
-    if (!currentPassword || !newPassword || !retypePassword) {
-      throw new CustomError("Password Fields Required");
-    }
+  //   const { currentPassword, newPassword, retypePassword } = req.body;
 
-    const user = await User.findOne({ _id: req.user._id });
+  //   if (!currentPassword || !newPassword || !retypePassword) {
+  //     throw new CustomError(req.t(translations.user.passwordFieldsRequired));
+  //   }
 
-    if (!user) {
-      throw new CustomError("User not found");
-    }
+  //   const user = await User.findOne({ _id: req.user._id });
 
-    const isPasswordCorrect = await user.correctPassword(currentPassword, user?.password);
+  //   if (!user) {
+  //     throw new CustomError(req.t(translations.user.notFound), 404);
+  //   }
 
-    if (!isPasswordCorrect) {
-      throw new CustomError("Current password is incorrect", 401);
-    }
+  //   const isPasswordCorrect = await user.correctPassword(
+  //     currentPassword,
+  //     user?.password
+  //   );
 
-    if (newPassword !== retypePassword) {
-      throw new CustomError("New passwords do not match", 401);
-    }
+  //   if (!isPasswordCorrect) {
+  //     throw new CustomError(
+  //       req.t(translations.user.currentPasswordIncorrect),
+  //       401
+  //     );
+  //   }
 
-    user.password = newPassword;
+  //   if (newPassword !== retypePassword) {
+  //     throw new CustomError(req.t(translations.user.passwordsDontMatch), 401);
+  //   }
 
-    await user.save();
+  //   user.password = newPassword;
 
-    res.status(201).send({
-      error: false,
-      message: "Password changed successfully",
-      data: user,
-    });
-  },
+  //   await user.save();
+
+  //   const message = changePasswordEmail(user.userName);
+
+  //   await sendEmail({
+  //     email: user.email,
+  //     subject: req.t(translations.user.passwordChangeSuccess), // "Password Changed",
+  //     message,
+  //   });
+
+  //   res.status(201).send({
+  //     error: false,
+  //     message: req.t(translations.user.passwordChangeSuccess),
+  //     data: user,
+  //   });
+  // },
 };

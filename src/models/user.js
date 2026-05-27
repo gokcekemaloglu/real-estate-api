@@ -57,7 +57,7 @@ const UserSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       index: true,
-      validate: [validator.isEmail, "Please provide a valid e-mail address"],
+      validate: [validator.isEmail, "Please provide a valid email address"],
       sparse: true,
     },
     phone: {
@@ -98,6 +98,6 @@ UserSchema.pre("save", async function (next) {
   }
 });
 
-UserSchema.methods.correctPassword = comparePassword;
+UserSchema.methods.currentPassword = comparePassword;
 
 module.exports = mongoose.model("User", UserSchema);
