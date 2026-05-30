@@ -12,6 +12,9 @@ const router = require("express").Router()
 // User routes:
 router.use("/users", require("./user"))
 
+// Token routes:
+router.use("/tokens", require("./token"))
+
 // Property routes:
 router.use("/properties", require("./property"))
 
