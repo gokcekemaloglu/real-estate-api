@@ -11,6 +11,7 @@ module.exports = {
         const data = await res.getModelList(Token, {}, "userId")
         res.status(200).send({
             error: false,
+            message: "Token list",
             details: await res.getModelListDetails(Token),
             data
         })
@@ -22,6 +23,7 @@ module.exports = {
         const data = await Token.create(req.body)
         res.status(201).send({
             error: false,
+            message: "Token created",
             data
         })
     },
@@ -35,6 +37,7 @@ module.exports = {
         }
         res.status(200).send({
             error: false,
+            message: "Token found",
             data
         })
     },
@@ -48,6 +51,7 @@ module.exports = {
         }
         res.status(202).send({
             error: false,
+            message: "Token updated successfully",
             data,
             new: await Token.findOne({_id: req.params.id}).populate("userId")
         })
