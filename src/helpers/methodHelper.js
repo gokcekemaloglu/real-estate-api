@@ -17,4 +17,12 @@ const comparePassword = async (candidatePassword, userPassword) => {
     return await bcrypt.compare(candidatePassword, userPassword)
 }
 
-module.exports = {comparePassword}
+/* Generates a high-entropy, random token string using crypto module. */
+const generateSimpleTokenKey = (userId) => {
+    const randomBytes = crypto.randomBytes(16).toString("hex") // 32 characters
+    const timestamp = Date.now().toString(16) // 8 characters
+    const rawTokenString = `${userId}-${timestamp}-${randomBytes}` // Total length: 32 + 8 + userId length + 2 (for dashes) = 42 + userId length
+    return crypto.createHash("sha256").update(rawTokenString).digest("hex") // Final token: 64 characters
+}
+
+module.exports = {comparePassword, generateSimpleTokenKey}

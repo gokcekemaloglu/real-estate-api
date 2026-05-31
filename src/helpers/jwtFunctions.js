@@ -22,7 +22,7 @@ const signAccessToken = (user) => {
 /* Signs a long-lived Refresh Token */
 const signRefreshToken = (user) => {
     return jwt.sign(
-        {_id: user._id},
+        {id: user.id || user._id, isActive: user.isActive},
         process.env.REFRESH_KEY,
         { expiresIn: "7d" }
     )
