@@ -6,9 +6,9 @@
 
 const Token = require("../models/token");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 const CustomError = require("../errors/customErrors");
-const bcrypt = require("bcrypt");
 const { signAccessToken, signRefreshToken } = require("../helpers/jwtFunctions");
 const { generateSimpleTokenKey } = require("../helpers/methodHelper");
 
@@ -22,7 +22,7 @@ module.exports = {
         in: "body",
         required: true,
         schema: {
-          "username": "test",
+          "userName": "test",
           "email": "test@test.com",
           "password": "aA?123456",
           "firstName": "Test",    
@@ -139,7 +139,7 @@ module.exports = {
         in: "body",
         required: true,
         schema: {
-          "refreshToken": "************************"
+          "token": "************************"
         }
       }
     */
@@ -170,5 +170,25 @@ module.exports = {
       }
     })
   },
-  logout: async (req, res) => {},
+  logout: async (req, res) => {
+    /*
+      #swagger.tags = ["Authentication"]
+      #swagger.summary = "Logout"
+      #swagger.description = 'Logout by deleting simple token from database'
+    */
+    const authHeader = req.headers?.authorization || null
+    // Guest-friendly and hybrid architecture check. If there's no token at all, it's missing. If there's a token, but it's not valid, it will be handled by the authentication middleware before reaching this point.
+    if(!authHeader) {
+      throw new CustomError("Authorization header is missing!", 401)
+    }
+    // If request contains a Simple Token, remove it from the database to destroy session
+    if(authHeader.startsWith("Token")) {
+      const tokenKey = authHeader.split(" ")[1]
+      await Token.deleteOne({ token: tokenKey });
+    }
+    res.status(200).send({
+      error: false,
+      message: "Logout successful",
+    });
+  },
 };
