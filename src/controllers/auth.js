@@ -143,7 +143,32 @@ module.exports = {
         }
       }
     */
-
+  
+    const {token: clientRefreshToken} = req.body
+    if(!clientRefreshToken) {
+      throw new CustomError("Refresh token is required", 400)
+    }
+    const decoded = jwt.verify(clientRefreshToken, process.env.REFRESH_KEY)
+    if(!decoded || !decoded.id) {
+      throw new CustomError("Invalid refresh token", 401)
+    }
+    if(!decoded.isActive) {
+      throw new CustomError("This account is no longer active", 401)
+    }
+    const user = await User.findOne({_id: decoded.id})
+    if(!user) {
+      throw new CustomError("User not found", 404)
+    }
+    const newAccessToken = signAccessToken(user)
+    const newRefreshToken = signRefreshToken(user)
+    res.status(200).send({
+      error: false,
+      message: "Token refreshed successfully",
+      data: {
+        access: newAccessToken,
+        refresh: newRefreshToken
+      }
+    })
   },
   logout: async (req, res) => {},
 };
