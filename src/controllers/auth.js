@@ -96,14 +96,7 @@ module.exports = {
       throw new CustomError("Invalid username or password", 401);
     }
 
-    // console.log("user", user);
-
-    // if (!user || !(await user.correctPassword(password))) {
-    //   throw new CustomError("Invalid username or password", 401);
-    // }
-
     // 5-If everything is okay, send token to client
-
     // --- SIMPLE TOKEN MANAGEMENT ---
     let tokenData = await Token.findOne({ userId: user._id });
     if (!tokenData) {
