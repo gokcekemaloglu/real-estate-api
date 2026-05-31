@@ -14,7 +14,7 @@ module.exports = async (req, res, next) => {
     const auth = req.headers?.authorization || null // Token ...tokenKey... // Bearer ...accessToken...
     const tokenKey = auth ? auth.split(' ') : null // ['Token', '...tokenKey...'] // ['Bearer', '...accessToken...']
 
-    if (tokenKey) {
+    if (tokenKey && tokenKey.length === 2) {
 
         if (tokenKey[0] == 'Token') {
 
