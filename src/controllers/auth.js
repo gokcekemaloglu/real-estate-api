@@ -9,6 +9,8 @@ const User = require("../models/user");
 
 const CustomError = require("../errors/customErrors");
 const bcrypt = require("bcrypt");
+const { signAccessToken, signRefreshToken } = require("../helpers/jwtFunctions");
+const { generateSimpleTokenKey } = require("../helpers/methodHelper");
 
 module.exports = {
   signup: async (req, res) => {
@@ -89,12 +91,12 @@ module.exports = {
       password,
       user.password,
     );
-    console.log("isPasswordCorrect", isPasswordCorrect);
+    // console.log("isPasswordCorrect", isPasswordCorrect);
     if (!isPasswordCorrect) {
       throw new CustomError("Invalid username or password", 401);
     }
 
-    console.log("user", user);
+    // console.log("user", user);
 
     // if (!user || !(await user.correctPassword(password))) {
     //   throw new CustomError("Invalid username or password", 401);
@@ -102,9 +104,53 @@ module.exports = {
 
     // 5-If everything is okay, send token to client
 
-    // Simple Token
-    
+    // --- SIMPLE TOKEN MANAGEMENT ---
+    let tokenData = await Token.findOne({ userId: user._id });
+    if (!tokenData) {
+      tokenData = await Token.create({
+        userId: user._id,
+        token: generateSimpleTokenKey(user._id.toString()),
+      });
+    }
+
+    // --- JWT MANAGEMENT ---
+    const accessToken = signAccessToken(user);
+    const refreshToken = signRefreshToken(user);
+
+    res.status(200).send({
+      error: false,
+      message: "Login successful",
+      data: {
+        token: tokenData.token,
+        jwt: {
+          access: accessToken,
+          refresh: refreshToken
+        },
+        user: {
+          _id: user._id,
+          userName: user.userName,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+      },
+    });
   },
-  refresh: async (req, res) => {},
+  // REFRESH JWT METHOD
+  refresh: async (req, res) => {
+    /*
+      #swagger.tags = ["Authentication"]
+      #swagger.summary = "Refresh JWT"
+      #swagger.description = 'Refresh JWT access token using refresh token'
+      #swagger.parameters["body"] = {
+        in: "body",
+        required: true,
+        schema: {
+          "refreshToken": "************************"
+        }
+      }
+    */
+
+  },
   logout: async (req, res) => {},
 };
