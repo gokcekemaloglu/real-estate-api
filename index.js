@@ -33,6 +33,10 @@ app.use(express.json())
 // It converts form data into a JavaScript object and makes it available in req.body.
 app.use(express.urlencoded({ extended: true }))
 
+// Check Authentication:
+app.use(require("./src/middlewares/authentication"));
+
+
 // res.getModelList middleware:
 app.use(require("./src/middlewares/queryHandler"))
 
