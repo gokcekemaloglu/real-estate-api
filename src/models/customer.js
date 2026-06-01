@@ -40,10 +40,11 @@ const CustomerSchema = new mongoose.Schema({
         trim: true,
         index: true
     },
-    note: {
-        type: String,
-        trim: true
-    },
+    note: [{
+        content: String,
+        createdAt: { type: Date, default: Date.now },
+        // trim: true
+    }],
     isActive: {
         type: Boolean,
         default: true
