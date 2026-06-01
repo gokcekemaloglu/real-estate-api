@@ -15,5 +15,11 @@ router.route("/:id")
     .put(property.update)
     .patch(property.update)
     .delete(property.delete)
+/* ----------------------------------- */
+
+router.route("/:id/status")
+    .patch(property.changePropertyStatus)
+router.route("/:id/featured")
+    .patch(property.changeFeaturedStatus)
 
 module.exports = router

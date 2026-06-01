@@ -7,6 +7,7 @@
 const Property = require("../models/property");
 
 const { mongoose } = require("../configs/dbConnection");
+const CustomError = require("../errors/customErrors");
 
 module.exports = {
   list: async (req, res) => {
@@ -24,6 +25,9 @@ module.exports = {
       `
     */
     let customFilter = {};
+    if (!req.user?.isAdmin) {
+      customFilter = {isActive: true}
+    }
     const data = await res.getModelList(Property, customFilter, "ownerId");
     const details = await res.getModelListDetails(Property);
     // console.log(req);
@@ -48,6 +52,12 @@ module.exports = {
         }
       }
     */
+    if(!req.user || !req.user.isAdmin) {
+      throw new CustomError("Only admins can create properties", 403)
+    }
+    if(req.user?.id) {
+      req.body.createdBy = req.user.id
+    }
     const data = await Property.create(req.body);
     res.status(201).send({
       error: false,
@@ -62,17 +72,11 @@ module.exports = {
     */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
-        error: true,
-        message: "Invalid ID format",
-      });
+      throw new CustomError("Invalid ID format", 400);
     }
     const data = await Property.findOne({ _id: id }).populate("ownerId");
     if (!data) {
-      return res.status(404).send({
-        error: true,
-        message: "Property not found",
-      });
+      throw new CustomError("Property not found", 404);
     }
     res.status(200).send({
       error: false,
@@ -93,44 +97,21 @@ module.exports = {
     */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
-        error: true,
-        message: "Invalid ID format",
-      });
+      throw new CustomError("Invalid ID format", 400);
     }
-    const allowedFields = [
-      "title",
-      "description",
-      "price",
-      "listingType",
-      "propertyType",
-      "city",
-      "district",
-      "neighbourhood",
-      "fullAddress",
-      "grossArea",
-      "netArea",
-      "floor",
-      "totalFloors",
-      "roomCount",
-      "buildingAge",
-      "heatingType",
-      "hasElevator",
-      "hasParking",
-      "isLoanEligible",
-    ];
+    const allowedFields = ["title", "description", "price", "listingType", "propertyType", "city", "district", "neighbourhood", "fullAddress", "grossArea", "netArea", "floor", "totalFloors", "roomCount", "buildingAge", "heatingType", "hasElevator", "hasParking", "isLoanEligible", "isFeatured", "ownerId"];
+    if(!req.user || !req.user.isAdmin) {
+      throw new CustomError("Only admins can update properties", 403)
+    }
     const filteredBody = {};
     for (let key in req.body) {
-        if (allowedFields.includes(key)) {
-            filteredBody[key] = req.body[key]
-        }
+      if (allowedFields.includes(key)) {
+        filteredBody[key] = req.body[key]
+      }
     }
     const data = await Property.findOneAndUpdate({ _id: id }, filteredBody, {returnDocument: "after", runValidators: true});
     if (!data) {
-      return res.status(404).send({
-        error: true,
-        message: "Property not found",
-      });
+      throw new CustomError("Property not found", 404);
     }
     res.status(200).send({
       error: false,
@@ -138,33 +119,94 @@ module.exports = {
       data,
     });
   },
-  delete: async (req, res) => {
+  changePropertyStatus: async (req, res) => {
     /*
       #swagger.tags = ["Properties"]
-      #swagger.summary = "Delete Property"
+      #swagger.summary = "Change Property Status"
     */
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).send({
-        error: true,
-        message: "Invalid ID format",
-      });
+      throw new CustomError("Invalid ID format", 400);
     }
+
+    if(!req.user || !req.user.isAdmin) {
+      throw new CustomError("Only admins can change property status", 403)
+    }
+
+    const property = await Property.findOne({ _id: id });
+    if (!property) {
+      throw new CustomError("Property not found", 404);
+    }
+    // Toggle the isActive status
+    const newStatus = !(property.isActive);
     const data = await Property.findOneAndUpdate(
       { _id: id },
-      { isActive: false, isFeatured: false },
+      { isActive: newStatus },
       { returnDocument: "after", runValidators: true },
     );
     if (!data) {
-      return res.status(404).send({
-        error: true,
-        message: "Property not found",
-      });
+      throw new CustomError("Property not found", 404);
     }
     res.status(200).send({
       error: false,
-      message: "Property deleted successfully",
+      message: `Property status changed successfully. Now ${data.isActive ? "Active" : "Inactive"}`,
       data,
     });
   },
+  changeFeaturedStatus: async (req, res) => {
+    /*
+      #swagger.tags = ["Properties"]
+      #swagger.summary = "Change Property's Featured Status"
+    */
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new CustomError("Invalid ID format", 400);
+    }
+
+    if(!req.user || !req.user.isAdmin) {
+      throw new CustomError("Only admins can change property featured status", 403)
+    }
+
+    const property = await Property.findOne({ _id: id });
+    if (!property) {
+      throw new CustomError("Property not found", 404);
+    }
+    // Toggle the isFeatured status
+    const newStatus = !(property.isFeatured);
+    const data = await Property.findOneAndUpdate(
+      { _id: id },
+      { isFeatured: newStatus },
+      { returnDocument: "after", runValidators: true },
+    );
+    if (!data) {
+      throw new CustomError("Property not found", 404);
+    }
+    res.status(200).send({
+      error: false,
+      message: `Featured status changed successfully. Now ${data.isFeatured ? "Featured" : "Standard"}`,
+      data,
+    });
+  },
+  delete: async (req, res) => {
+    /*
+      #swagger.tags = ["Properties"]
+      #swagger.summary = "Hard Delete Property"
+    */
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new CustomError("Invalid ID format", 400);
+    }
+    if(!req.user || !req.user.isAdmin) {
+      throw new CustomError("Only admins can delete properties", 403)
+    }
+    const data = await Property.findOneAndDelete({ _id: id });
+    if (!data) {
+      throw new CustomError("Property not found", 404);
+    }
+    res.status(200).send({
+      error: false,
+      message: "Property hard deleted successfully",
+      data,
+    });
+  }
 };
