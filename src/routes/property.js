@@ -17,4 +17,3 @@ router.route("/:id")
     .delete(property.delete)
 
 module.exports = router
-
