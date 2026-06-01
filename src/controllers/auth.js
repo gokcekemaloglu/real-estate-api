@@ -144,7 +144,7 @@ module.exports = {
       }
     */
   
-    const {token: clientRefreshToken} = req.body
+    const {refreshToken: clientRefreshToken} = req.body
     if(!clientRefreshToken) {
       throw new CustomError("Refresh token is required", 400)
     }
