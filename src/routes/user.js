@@ -10,16 +10,17 @@ router.route("/")
     .get(user.list)
     .post(user.create)
 
-router.route("/:id")
-    .get(user.read)
-    .put(user.update)
-    .patch(user.update)
-    .delete(user.delete)
-
 router.route("/:id/status")
     .patch(user.changeUserStatus)
 
 router.route("/:id/changeMyPassword")
     .patch(user.changeMyPassword);
+
+router.route("/:id")
+    .get(user.read)
+    .put(user.update)
+    .patch(user.update)
+    .delete(user.delete)
+/* ----------------------------------- */
 
 module.exports = router

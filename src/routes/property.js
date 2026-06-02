@@ -10,6 +10,11 @@ router.route("/")
     .get(property.list)
     .post(property.create)
 
+router.route("/:id/status")
+    .patch(property.changePropertyStatus)
+router.route("/:id/featured")
+    .patch(property.changeFeaturedStatus)
+
 router.route("/:id")
     .get(property.read)
     .put(property.update)
@@ -17,9 +22,5 @@ router.route("/:id")
     .delete(property.delete)
 /* ----------------------------------- */
 
-router.route("/:id/status")
-    .patch(property.changePropertyStatus)
-router.route("/:id/featured")
-    .patch(property.changeFeaturedStatus)
 
 module.exports = router
