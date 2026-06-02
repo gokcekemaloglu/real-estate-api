@@ -8,6 +8,7 @@ const Property = require("../models/property");
 
 const { mongoose } = require("../configs/dbConnection");
 const CustomError = require("../errors/customErrors");
+const Customer = require("../models/customer");
 
 module.exports = {
   list: async (req, res) => {
@@ -55,6 +56,16 @@ module.exports = {
     if(!req.user || !req.user.isAdmin) {
       throw new CustomError("Only admins can create properties", 403)
     }
+
+    // Validate if the owner actually exists
+    if(req.body.ownerId) {
+      // const { default: customerCheck } = require("../models/customer"); // Dynamically import to prevent circular dependency
+      const owner = await Customer.findById(req.body.ownerId);
+      if(!owner) {
+        throw new CustomError("Owner not found", 404);
+      }
+    }
+
     if(req.user?.id) {
       req.body.createdBy = req.user.id
     }
@@ -99,10 +110,19 @@ module.exports = {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new CustomError("Invalid ID format", 400);
     }
-    const allowedFields = ["title", "description", "price", "listingType", "propertyType", "city", "district", "neighbourhood", "fullAddress", "grossArea", "netArea", "floor", "totalFloors", "roomCount", "buildingAge", "heatingType", "hasElevator", "hasParking", "isLoanEligible", "isFeatured", "ownerId"];
     if(!req.user || !req.user.isAdmin) {
       throw new CustomError("Only admins can update properties", 403)
     }
+
+    // Validate if the owner actually exists
+    if(req.body.ownerId) {
+      const owner = await Customer.findById(req.body.ownerId);
+      if(!owner) {
+        throw new CustomError("Owner not found", 404);
+      }
+    }
+    
+    const allowedFields = ["title", "description", "price", "listingType", "propertyType", "city", "district", "neighbourhood", "fullAddress", "grossArea", "netArea", "floor", "totalFloors", "roomCount", "buildingAge", "heatingType", "hasElevator", "hasParking", "isLoanEligible", "isFeatured", "ownerId"];
     const filteredBody = {};
     for (let key in req.body) {
       if (allowedFields.includes(key)) {
