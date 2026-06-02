@@ -21,7 +21,10 @@ module.exports = async (req, res, next) => {
             // --- SIMPLE TOKEN AUTHENTICATION ---
             const tokenData = await Token.findOne({ token: tokenKey[1] }).populate('userId')
             // If simple token is valid and user is active, inject into request context
-            if (tokenData && tokenData.userId && tokenData.userId.isActive) {
+            if (tokenData && tokenData?.userId && tokenData.userId?.isActive) {
+                // Convert the Mongoose document to a plain JavaScript object to make sure id, userName, and isAdmin fields are easily readable by controllers
+                const userObj = tokenData.userId.toObject();
+                userObj.id = userObj._id.toString(); // Ensure standard id format
                 req.user = tokenData.userId;
             }
 
