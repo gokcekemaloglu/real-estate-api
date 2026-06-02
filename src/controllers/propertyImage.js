@@ -5,7 +5,6 @@
 /* ------------------------------------------------- */
 
 const PropertyImage = require("../models/propertyImage");
-
 const { mongoose } = require("../configs/dbConnection");
 const CustomError = require("../errors/customErrors");
 
@@ -53,6 +52,10 @@ module.exports = {
     if (!req.user || !req.user?.isAdmin) {
       throw new CustomError("Only admins can create property Images", 403)
     }
+    const {propertyId, imageUrl} = req.body
+    if(!propertyId || !imageUrl) {
+      throw new CustomError("propertyId and imageUrl are required", 400)
+    }
     const data = await PropertyImage.create(req.body);
     res.status(201).send({
       error: false,
@@ -69,7 +72,7 @@ module.exports = {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new CustomError("Invalid ID format", 400);
     }
-    const data = await PropertyImage.findOne({ _id: id });
+    const data = await PropertyImage.findOne({ _id: id }).populate("propertyId");
     if (!data) {
       throw new CustomError("Property Image not found", 404);
     }
@@ -126,15 +129,20 @@ module.exports = {
     if(!req.user || !req.user?.isAdmin) {
       throw new CustomError("Only admins can change property Image cover status", 403)
     }
-    const propertyImage = await PropertyImage.findOne({ _id: id });
-    if (!propertyImage) {
+    const currentImage = await PropertyImage.findOne({ _id: id });
+    if (!currentImage) {
       throw new CustomError("Property Image not found", 404);
     }
     // Toggle the isCover status
-    const newStatus = !(propertyImage.isCover);
+    // If this image is going to be the cover, we must first reset ALL other images of the SAME property to isCover: false
+    await PropertyImage.updateMany(
+      { propertyId: currentImage.propertyId },
+      { isCover: false }
+    );
+    // Set the current selected image as the true cover
     const data = await PropertyImage.findOneAndUpdate(
       { _id: id },
-      { isCover: newStatus },
+      { isCover: true },
       { returnDocument: "after", runValidators: true },
     );
     if (!data) {
@@ -142,7 +150,7 @@ module.exports = {
     }
     res.status(200).send({
       error: false,
-      message: `Property Image status changed successfully. Now the image is ${data.isCover ? "set as cover" : "not set as cover"}`,
+      message: "This image is now set as the property cover image",
       data,
     });
   },
@@ -164,7 +172,7 @@ module.exports = {
     }
     res.status(200).send({
       error: false,
-      message: "Property Image hard deleted successfully",
+      message: "Property Image record deleted successfully",
       data,
     });
   }

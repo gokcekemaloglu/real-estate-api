@@ -10,6 +10,9 @@ router.route("/")
     .get(propertyImage.list)
     .post(propertyImage.create)
 
+router.route("/:id/set-cover")
+    .patch(propertyImage.changeCoverStatus)
+
 router.route("/:id")
     .get(propertyImage.read)
     .put(propertyImage.update)
@@ -17,7 +20,5 @@ router.route("/:id")
     .delete(propertyImage.delete)
 /* ----------------------------------- */
 
-router.route("/:id/status")
-    .patch(propertyImage.changeCoverStatus)
 
 module.exports = router

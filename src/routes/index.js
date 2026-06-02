@@ -25,6 +25,9 @@ router.use("/auth", require("./auth"))
 // Property routes:
 router.use("/properties", require("./property"))
 
+// Property Image routes:
+router.use("/property-images", require("./propertyImage"))
+
 // Customer routes:
 router.use("/customers", require("./customer"))
 
