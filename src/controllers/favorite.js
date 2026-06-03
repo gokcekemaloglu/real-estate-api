@@ -33,7 +33,10 @@ module.exports = {
       }
       customFilter = { userId: req.user.id };
     }
-    const data = await res.getModelList(Favorite, customFilter, ["userId", "propertyId"]);
+    const data = await res.getModelList(Favorite, customFilter, [
+      "userId",
+      "propertyId",
+    ]);
     const details = await res.getModelListDetails(Favorite, customFilter);
     // console.log(req);
     // console.log(res);
@@ -59,7 +62,7 @@ module.exports = {
     */
 
     const id = req.user?.id;
-    
+
     if (!id) {
       throw new CustomError("User ID is required", 400);
     }
@@ -68,7 +71,7 @@ module.exports = {
     }
 
     const bodyUserId = req.body.userId;
-    
+
     if (bodyUserId && bodyUserId !== id) {
       throw new CustomError("You can only create favorites for yourself", 403);
     }
@@ -78,7 +81,7 @@ module.exports = {
     }
     req.body.userId = id; // Ensure the favorite is always created for the authenticated user
 
-    propertyId = req.body.propertyId;
+    const propertyId = req.body.propertyId;
     if (!propertyId) {
       throw new CustomError("Property ID is required", 400);
     }
@@ -114,7 +117,10 @@ module.exports = {
       throw new CustomError("Favorite not found", 404);
     }
     if (!req.user?.isAdmin && data.userId._id.toString() !== req.user?.id) {
-      throw new CustomError("You do not have permission to view this favorite", 403);
+      throw new CustomError(
+        "You do not have permission to view this favorite",
+        403,
+      );
     }
     res.status(200).send({
       error: false,
@@ -134,8 +140,14 @@ module.exports = {
     if (!favoriteRecord) {
       throw new CustomError("Favorite not found", 404);
     }
-    if (!req.user?.isAdmin && favoriteRecord.userId.toString() !== req.user?.id) {
-      throw new CustomError("You do not have permission to delete this favorite", 403);
+    if (
+      !req.user?.isAdmin &&
+      favoriteRecord.userId.toString() !== req.user?.id
+    ) {
+      throw new CustomError(
+        "You do not have permission to delete this favorite",
+        403,
+      );
     }
     const data = await Favorite.findOneAndDelete({ _id: id });
     if (!data) {
@@ -146,5 +158,62 @@ module.exports = {
       message: "Favorite deleted successfully",
       data,
     });
+  },
+  toggle: async (req, res) => {
+    /*
+      #swagger.tags = ["Favorites"]
+      #swagger.summary = "Toggle Favorite (Add to favorites if not exists, remove if already favorited)"
+      #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+            type: "object",
+            properties: {
+                propertyId: {
+                    type: "string",
+                    description: "ID of the property to toggle favorite for"
+                }
+            },
+            required: ["propertyId"]
+        }
+      }
+    */
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new CustomError("User ID is required", 400);
+    }
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new CustomError("Invalid User ID format", 400);
+    }
+    const propertyId = req.body.propertyId;
+    if (!propertyId) {
+      throw new CustomError("Property ID is required", 400);
+    }
+    if (!mongoose.Types.ObjectId.isValid(propertyId)) {
+      throw new CustomError("Invalid Property ID format", 400);
+    }
+    const propertyExists = await Property.findById(propertyId);
+    if (!propertyExists) {
+      throw new CustomError("Property not found", 404);
+    }
+    const existingFavorite = await Favorite.findOne({
+      userId,
+      propertyId,
+    });
+    if (existingFavorite) {
+      const data = await Favorite.findByIdAndDelete(existingFavorite._id);
+      return res.status(200).send({
+        error: false,
+        message: "Favorite removed successfully (Unliked)",
+        data,
+      });
+    } else {
+      const data = await Favorite.create({ userId, propertyId });
+      return res.status(201).send({
+        error: false,
+        message: "Favorite added successfully (Liked)",
+        data,
+      });
+    }
   },
 };
