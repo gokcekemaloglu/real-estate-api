@@ -28,6 +28,9 @@ router.use("/properties", require("./property"))
 // Property Image routes:
 router.use("/property-images", require("./propertyImage"))
 
+// Favorite routes:
+router.use("/favorites", require("./favorite"))
+
 // Customer routes:
 router.use("/customers", require("./customer"))
 
