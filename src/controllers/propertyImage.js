@@ -148,10 +148,11 @@ module.exports = {
       throw new CustomError("Property Image not found", 404);
     }
     // Toggle the isCover status
+    const targetPropertyId = currentImage.propertyId.toString();
     // If this image is going to be the cover, we must first reset ALL other images of the SAME property to isCover: false
     await PropertyImage.updateMany(
-      { propertyId: currentImage.propertyId },
-      { isCover: false }
+      { propertyId: targetPropertyId },
+      { $set: {isCover: false} }
     );
     // Set the current selected image as the true cover
     const data = await PropertyImage.findOneAndUpdate(
