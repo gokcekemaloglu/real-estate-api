@@ -52,11 +52,21 @@ module.exports = {
     if (!req.user || !req.user?.isAdmin) {
       throw new CustomError("Only admins can create property Images", 403)
     }
-    const {propertyId, imageUrl} = req.body
-    if(!propertyId || !imageUrl) {
-      throw new CustomError("propertyId and imageUrl are required", 400)
+
+    // Validate if a physical file was uploaded by Multer
+    if (!req.file) {
+      throw new CustomError("Image file is required", 400);
     }
-    const data = await PropertyImage.create(req.body);
+
+    const {propertyId} = req.body
+    if(!propertyId || !req.file) {
+      throw new CustomError("propertyId and image file are required", 400)
+    }
+
+    // 2. Map the uploaded filename to the dynamic static web url path
+    const imageUrl = `/uploads/${req.file.filename}`;
+    
+    const data = await PropertyImage.create({ propertyId, imageUrl});
     res.status(201).send({
       error: false,
       message: "Property Image created successfully",
@@ -97,17 +107,21 @@ module.exports = {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new CustomError("Invalid ID format", 400);
     }
-    const allowedFields = ["propertyId", "imageUrl"];
     if(!req.user || !req.user?.isAdmin) {
       throw new CustomError("Only admins can update property Images", 403)
     }
-    const filteredBody = {};
-    for (let key in req.body) {
-      if (allowedFields.includes(key)) {
-        filteredBody[key] = req.body[key]
-      }
+
+    const { propertyId } = req.body;
+    if (!propertyId) {
+      throw new CustomError("propertyId is required for update", 400);
     }
-    const data = await PropertyImage.findOneAndUpdate({ _id: id }, filteredBody, {returnDocument: "after", runValidators: true});
+    
+    if (propertyId && !mongoose.Types.ObjectId.isValid(propertyId)) {
+      throw new CustomError("Invalid propertyId format", 400);
+    }
+
+
+    const data = await PropertyImage.findOneAndUpdate({ _id: id }, {propertyId}, {returnDocument: "after", runValidators: true});
     if (!data) {
       throw new CustomError("Property Image not found", 404);
     }
