@@ -116,7 +116,7 @@ module.exports = {
       throw new CustomError("propertyId is required for update", 400);
     }
     
-    if (propertyId && !mongoose.Types.ObjectId.isValid(propertyId)) {
+    if (!mongoose.Types.ObjectId.isValid(propertyId)) {
       throw new CustomError("Invalid propertyId format", 400);
     }
 
