@@ -62,10 +62,10 @@ Create a `.env` file in the root directory and securely map the following variab
 NODE_ENV=development
 PORT=8000
 HOST=127.0.0.1
-MONGODB=your_mongodb_connection_string
-SECRET_KEY=your_global_app_secret
-ACCESS_KEY=your_jwt_access_signature_key
-REFRESH_KEY=your_jwt_refresh_signature_key
+MONGODB=mongodb_connection_string
+SECRET_KEY=global_app_secret_key
+ACCESS_KEY=jwt_access_signature_key
+REFRESH_KEY=jwt_refresh_signature_key
 ```
 
 ### 4. Running the Server
