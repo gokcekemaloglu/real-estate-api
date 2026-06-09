@@ -9,53 +9,52 @@ const {mongoose} = require("../configs/dbConnection")
 const PropertySchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true,
+        required: [true, "Ad title / Listing title is required"],
         trim: true
     },
     description: {
         type: String,
-        required: true,
+        required: [true, "Description is required"],
         trim: true
     },
     price: {
         type: Number,
-        required: true,
+        required: [true, "Price is required"],
         min: 0,
         index: true
     },
     listingType: {
         type: String,
-        enum: ["sale", "rent"],
-        required: true,
+        enum: ["sale", "rent", "transfer_sale", "transfer_rent"],
+        required: [true, "Listing type is required"],
         index: true
     },
-    propertyType: {
+    propertyCategory: {
         type: String,
         enum: ["apartment", "house", "villa", "land", "commercial"],
-        required: true,
+        required: [true, "Property Category is required"],
         index: true
     },
     city: {
         type: String,
-        required: true,
+        required: [true, "City is required"],
         trim: true,
         index: true
     },
     district: {
         type: String,
-        required: true,
+        required: [true, "District is required"],
         trim: true,
         index: true
     },
     neighbourhood: {
         type: String,
-        required: true,
+        required: [true, "Neighbourhood is required"],
         trim: true,
         index: true
     },
     fullAddress: {
         type: String,
-        // required: true,
         trim: true
     },
     grossArea:{
@@ -78,19 +77,34 @@ const PropertySchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    bathroomCount: {
+        type: Number,
+        min: 0,
+        default: 0
+    },
     buildingAge: {
         type: Number,
         min: 0
     },
     heatingType: {
         type: String,
-        enum: ["central", "combi", "electric", "stove", "none"],
+        enum: ["combi", "air_conditioner", "electric", "central_share_meter", "central", "none"],
         default: "none"
     },
-    /*hasBalcony: {
+    maintenanceFee: {
+        type: Number,
+        min: 0,
+        default: 0
+    },
+    isFurnished: {
         type: Boolean,
         default: false
-    },*/
+    },
+    occupancyStatus: {
+        type: String,
+        enum: ["vacant", "tenant", "owner"], 
+        index: true
+    },
     hasElevator: {
         type: Boolean,
         default: false
