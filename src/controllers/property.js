@@ -122,7 +122,7 @@ module.exports = {
       }
     }
     
-    const allowedFields = ["title", "description", "price", "listingType", "propertyType", "city", "district", "neighbourhood", "fullAddress", "grossArea", "netArea", "floor", "totalFloors", "roomCount", "buildingAge", "heatingType", "hasElevator", "hasParking", "isLoanEligible", "isFeatured", "ownerId"];
+    const allowedFields = ["title", "description", "price", "listingType", "propertyCategory", "city", "district", "neighbourhood", "fullAddress", "grossArea", "netArea", "floor", "totalFloors", "roomCount", "buildingAge", "heatingType", "hasElevator", "hasParking", "isLoanEligible", "isFeatured", "ownerId", "bathroomCount", "maintenanceFee", "isFurnished", "occupancyStatus"];
     const filteredBody = {};
     for (let key in req.body) {
       if (allowedFields.includes(key)) {
