@@ -63,17 +63,17 @@ module.exports = {
         }
       }
     */
-    const { userName, email, password } = req.body;
+    const { userNameOrEmail, password } = req.body;
     // 1-Check if userName/email and password exist
-    if (!((userName || email) && password)) {
+    if (!(userNameOrEmail && password)) {
       throw new CustomError("Username/email and password are required", 400);
     }
 
     // 2-Check if user exists and password is correct
     const user = await User.findOne({
       $or: [
-        { userName: userName },
-        { email: email }
+        { userName: userNameOrEmail },
+        { email: userNameOrEmail }
       ],
     }).select("+password")
 
