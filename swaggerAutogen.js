@@ -41,8 +41,12 @@ const document = {
 	security: [{ Token: [] }, { Bearer: [] }],
 	definitions: {
 		// Models:
-		"Property": require('./src/models/property').schema.obj,
-		// "User": require('./src/models/user').schema.obj,
+		Property: require('./src/models/property').schema.obj,
+		PropertyImage: require('./src/models/propertyImage').schema.obj,
+		Favorite: require('./src/models/favorite').schema.obj,
+		Customer: require('./src/models/customer').schema.obj,
+		Token: require('./src/models/token').schema.obj,
+		User: require('./src/models/user').schema.obj,
 	}
 }
 
