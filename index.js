@@ -32,11 +32,15 @@ app.use(express.json())
 // Cors
 const cors = require("cors")
 
-// Open Gateway for Frontend URL safely
-app.use(cors({
+const corsOptions = {
     origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true
-}))
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    credentials: true,
+    exposedHeaders: ["Authorization", "set-cookie"]
+}
+
+// Open Gateway for Frontend URL safely
+app.use(cors(corsOptions))
 
 // This middleware allows Express to read data sent from HTML forms.
 // It converts form data into a JavaScript object and makes it available in req.body.
