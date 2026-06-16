@@ -30,7 +30,7 @@ module.exports = {
       customFilter = {isActive: true}
     }
     const data = await res.getModelList(Property, customFilter, "ownerId");
-    const details = await res.getModelListDetails(Property);
+    const details = await res.getModelListDetails(Property, customFilter);
     // console.log(req);
     // console.log(res);
 
