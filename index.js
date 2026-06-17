@@ -29,6 +29,9 @@ dbConnection()
 // Accept JSON:
 app.use(express.json())
 
+// Instructs Express to use extended 'qs' parser to seamlessly unpack nested filter[key] objects!
+app.set("query parser", "extended")
+
 // Cors
 const cors = require("cors")
 
