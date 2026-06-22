@@ -1363,10 +1363,6 @@
             "min": {
               "type": "number",
               "example": 0
-            },
-            "default": {
-              "type": "number",
-              "example": 0
             }
           }
         },
@@ -1415,10 +1411,6 @@
               "type": "function"
             },
             "min": {
-              "type": "number",
-              "example": 0
-            },
-            "default": {
               "type": "number",
               "example": 0
             }

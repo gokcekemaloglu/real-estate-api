@@ -79,8 +79,7 @@ const PropertySchema = new mongoose.Schema({
     },
     bathroomCount: {
         type: Number,
-        min: 0,
-        default: 0
+        min: 0
     },
     buildingAge: {
         type: Number,
@@ -93,8 +92,7 @@ const PropertySchema = new mongoose.Schema({
     },
     maintenanceFee: {
         type: Number,
-        min: 0,
-        default: 0
+        min: 0
     },
     isFurnished: {
         type: Boolean,

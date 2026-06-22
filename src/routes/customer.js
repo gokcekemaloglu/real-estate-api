@@ -3,7 +3,7 @@
 const router = require("express").Router()
 
 /* ----------------------------------- */
-// routes/customer
+// routes/customers
 const customer = require("../controllers/customer")
 
 router.route("/")
