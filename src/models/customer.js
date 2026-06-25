@@ -29,7 +29,8 @@ const CustomerSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        index: true
+        index: true,
+        set: (value) => (value === "" ? null : value)
     },
     address: {
         type: String,

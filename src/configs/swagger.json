@@ -1747,6 +1747,9 @@
             "index": {
               "type": "boolean",
               "example": true
+            },
+            "set": {
+              "type": "function"
             }
           }
         },

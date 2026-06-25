@@ -22,5 +22,4 @@ router.route("/:id")
     .delete(propertyImage.delete)
 /* ----------------------------------- */
 
-
 module.exports = router
