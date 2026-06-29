@@ -18,6 +18,7 @@ module.exports = (req, res, next) => {
     // console.log(search)
     // const example = { title: { $regex: 'test', $options: 'i' } } // const example = { title: /test/ }
     for (let key in search) search[key] = { $regex: search[key], $options: 'i' } // i: case insensitive
+    
     // console.log(search)
 
     // ### SORTING ###
@@ -26,6 +27,14 @@ module.exports = (req, res, next) => {
     // asc: A-Z - desc: Z-A
     const sort = req.query?.sort || {}
     // console.log(sort)
+
+    for (let key in sort) {
+        if (sort[key] === "1" || sort[key] === "asc") {
+            sort[key] = 1; // Pure numeric ascending directional pointer
+        } else if (sort[key] === "-1" || sort[key] === "desc") {
+            sort[key] = -1; // Pure numeric descending directional pointer
+        }
+    }
     
     // Default sort by newest first:
     if (!Object.keys(sort).length) {

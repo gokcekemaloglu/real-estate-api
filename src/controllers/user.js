@@ -38,6 +38,17 @@ module.exports = {
     */
 
     let customFilter = {};
+    if (req.query?.search?.q) {
+      const keyword = req.query.search.q;
+        
+      customFilter.$or = [
+        { firstName: { $regex: keyword, $options: 'i' } },
+        { lastName: { $regex: keyword, $options: 'i' } },
+        { phone: { $regex: keyword, $options: 'i' } }
+      ];
+        
+      delete req.query.search.q;
+    }
     const data = await res.getModelList(User, customFilter);
     const details = await res.getModelListDetails(User, customFilter);
     // console.log(req);

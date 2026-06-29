@@ -28,9 +28,20 @@ module.exports = {
       throw new CustomError("Only admins can view customers", 403)
     }
     let customFilter = {};
+    if (req.query?.search?.q) {
+      const keyword = req.query.search.q;
+        
+      customFilter.$or = [
+        { firstName: { $regex: keyword, $options: 'i' } },
+        { lastName: { $regex: keyword, $options: 'i' } },
+        { phone: { $regex: keyword, $options: 'i' } }
+      ];
+        
+      delete req.query.search.q;
+    }
 
     const data = await res.getModelList(Customer, customFilter);
-    const details = await res.getModelListDetails(Customer);
+    const details = await res.getModelListDetails(Customer, customFilter);
     // console.log(req);
     // console.log(res);
 
