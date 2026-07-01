@@ -31,7 +31,7 @@ const CustomerSchema = new mongoose.Schema({
         trim: true,
         index: true,
         sparse: true,
-        set: (value) => (value === "" ? null : value)
+        set: (value) => (value === "" || value === null || value === undefined ? undefined : value)
     },
     address: {
         type: String,
