@@ -30,6 +30,7 @@ const CustomerSchema = new mongoose.Schema({
         lowercase: true,
         trim: true,
         index: true,
+        sparse: true,
         set: (value) => (value === "" ? null : value)
     },
     address: {

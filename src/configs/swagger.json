@@ -1762,6 +1762,10 @@
               "type": "boolean",
               "example": true
             },
+            "sparse": {
+              "type": "boolean",
+              "example": true
+            },
             "set": {
               "type": "function"
             }
