@@ -126,11 +126,13 @@ module.exports = {
       }
     */
     const { id } = req.params;
+    // console.log(id)
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new CustomError("Invalid ID format", 400);
     }
     const {_id, password, ...updatedData} = req.body
-
+    // console.log(req.body);
+    
     const data = await User.findOneAndUpdate({_id: id}, updatedData, {
       returnDocument: "after",
       runValidators: true,
@@ -138,8 +140,55 @@ module.exports = {
     if (!data) {
       throw new CustomError("User not found", 404);
     }
-    if (data.modifiedCount) {
-      
+    
+    if (data) {      
+      res.status(200).send({
+        error: false,
+        message: "User updated successfully",
+        data,
+        // new: await User.findOne({_id: req.params.id})
+      });
+    } else {
+      res.status(200).send({
+        error: false,
+        message: "This user is not found or there is no change in the data",
+        data,
+      });
+    }
+  },
+  updateMe: async (req, res) => {
+    /* 
+      #swagger.tags = ["Users"]
+      #swagger.summary = "Update User"
+      #swagger.parameters['body'] = {
+        in: 'body',
+        required: true,
+        schema: {
+          "userName": "test",
+          "email": "test@site.com",
+          "password": "aA!123456",
+          "firstName": "test",
+          "lastName": "test",
+        }
+      }
+    */
+    const { id } = req.params;
+    // console.log(id)
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new CustomError("Invalid ID format", 400);
+    }
+    const {_id, password, userName, ...updatedData} = req.body
+    // console.log(req.body);
+    const data = await User.findOneAndUpdate({_id: id}, updatedData, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+    
+    console.log("data", data);
+    if (!data) {
+      throw new CustomError("User not found", 404);
+    }
+    if (data) {
       res.status(200).send({
         error: false,
         message: "User updated successfully",
@@ -224,7 +273,8 @@ module.exports = {
       throw new CustomError("Password Fields Required");
     }
 
-    const user = await User.findOne({ _id: req.user._id });
+    const user = await User.findOne({ _id: req.user._id }).select("+password");
+    console.log("user", user);
 
     if (!user) {
       throw new CustomError("User not found");
