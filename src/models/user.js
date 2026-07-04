@@ -66,7 +66,7 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
       // Converts empty strings to null to prevent MongoDB unique index collision errors
-      set: (value) => (value === "" ? null : value)
+      set: (value) => (value === "" || value === null || value === undefined ? undefined : value)
     },
     address: {
       type: String,
