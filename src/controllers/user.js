@@ -184,7 +184,7 @@ module.exports = {
       runValidators: true,
     });
     
-    console.log("data", data);
+    // console.log("data", data);
     if (!data) {
       throw new CustomError("User not found", 404);
     }
@@ -212,6 +212,14 @@ module.exports = {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new CustomError("Invalid ID format", 400);
     }
+    const user = await User.findOne({ _id: id });
+    if (!user) {
+      throw new CustomError("User not found", 404);
+    }
+    if (user && user.isAdmin) {
+      throw new CustomError("Yönetici hesapları sistem güvenliği nedeniyle silinemez!", 403);
+    }
+
     const data = await User.deleteOne({ _id: id });
     res.status(data.deletedCount ? 200 : 404).send({
       error: !data.deletedCount,
@@ -237,6 +245,9 @@ module.exports = {
 
     if (!user) {
       throw new CustomError("User not found", 404);
+    }
+    if (user && user.isAdmin) {
+      throw new CustomError("Yönetici hesapları sistem güvenliği nedeniyle dondurulamaz!", 403);
     }
 
     // Toggle the isActive status
