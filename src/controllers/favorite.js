@@ -35,7 +35,7 @@ module.exports = {
     }
     const data = await res.getModelList(Favorite, customFilter, [
       "userId",
-      "propertyId",
+      { path: "propertyId", populate: { path: "ownerId" } },
     ]);
     const details = await res.getModelListDetails(Favorite, customFilter);
     // console.log(req);

@@ -141,12 +141,24 @@ const PropertySchema = new mongoose.Schema({
         ref: "Customer",
         // required: true,
         index: true
-    }
+    },
+    viewsCount: {
+      type: Number,
+      default: 0, // Starts naturally at baseline zero counts
+    },
 }, {
     collection: "properties",
     timestamps: true
 })
 
 PropertySchema.index({createdAt: -1})
+
+// Maps a direct relational reference to compile favorites pop counts dynamically from the Favorite collection without storing redundant heavy data keys inside properties documents!
+PropertySchema.virtual("favoriteCount", {
+  ref: "Favorite", // Target foreign model collection to query
+  localField: "_id", // Local primary object identifier key
+  foreignField: "propertyId", // Matched constraint identifier inside Favorite model schema
+  count: true, // Tells MongoDB to return a direct absolute count integer instead of a nested document list array
+});
 
 module.exports = mongoose.model("Property", PropertySchema)
