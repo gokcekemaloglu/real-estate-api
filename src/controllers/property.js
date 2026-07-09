@@ -29,7 +29,7 @@ module.exports = {
     if (!req.user?.isAdmin) {
       customFilter = {isActive: true}
     }
-    const data = await res.getModelList(Property, customFilter, "ownerId");
+    const data = await res.getModelList(Property, customFilter, ["ownerId", "favoriteCount"]);
     const details = await res.getModelListDetails(Property, customFilter);
     // console.log(req);
     // console.log(res);
@@ -85,7 +85,11 @@ module.exports = {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new CustomError("Invalid ID format", 400);
     }
-    const data = await Property.findOne({ _id: id }).populate("ownerId");
+    const data = await Property.findOneAndUpdate(
+      { _id: id }, 
+      {$inc: { viewsCount: 1 }}, 
+      { returnDocument: "after" }
+    ).populate("ownerId").populate("favoriteCount");
     if (!data) {
       throw new CustomError("Property not found", 404);
     }

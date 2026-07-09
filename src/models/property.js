@@ -75,7 +75,8 @@ const PropertySchema = new mongoose.Schema({
     },
     roomCount: {
         type: String,
-        trim: true
+        trim: true,
+        required: [true, "Room count is required"],
     },
     bathroomCount: {
         type: Number,
@@ -100,7 +101,8 @@ const PropertySchema = new mongoose.Schema({
     },
     occupancyStatus: {
         type: String,
-        enum: ["vacant", "tenant", "owner"], 
+        enum: ["vacant", "tenant", "owner", null], 
+        default: null,
         index: true
     },
     hasElevator: {
@@ -114,7 +116,6 @@ const PropertySchema = new mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        // required: true
     },
     isActive: {
         type: Boolean,
@@ -124,11 +125,7 @@ const PropertySchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    viewCount: {
-        type: Number,
-        default: 0
-    },
-    favouritesCount: {
+    viewsCount: {
         type: Number,
         default: 0
     },
@@ -142,20 +139,19 @@ const PropertySchema = new mongoose.Schema({
         // required: true,
         index: true
     },
-    viewsCount: {
-      type: Number,
-      default: 0, // Starts naturally at baseline zero counts
-    },
 }, {
     collection: "properties",
-    timestamps: true
+    timestamps: true,
+    // Converts virtual aggregate fields safely during JSON transits to frontend cards
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 })
 
 PropertySchema.index({createdAt: -1})
 
 // Maps a direct relational reference to compile favorites pop counts dynamically from the Favorite collection without storing redundant heavy data keys inside properties documents!
 PropertySchema.virtual("favoriteCount", {
-  ref: "Favorite", // Target foreign model collection to query
+  ref: "Favorite",
   localField: "_id", // Local primary object identifier key
   foreignField: "propertyId", // Matched constraint identifier inside Favorite model schema
   count: true, // Tells MongoDB to return a direct absolute count integer instead of a nested document list array
