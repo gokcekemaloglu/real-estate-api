@@ -61,7 +61,7 @@ module.exports = {
       }
     */
 
-    const id = req.user?.id;
+    const id = req.user?._id || req.user?.id;
 
     if (!id) {
       throw new CustomError("User ID is required", 400);
@@ -178,7 +178,7 @@ module.exports = {
         }
       }
     */
-    const userId = req.user?.id;
+    const userId = req.user?._id || req.user?.id;
     if (!userId) {
       throw new CustomError("User ID is required", 400);
     }
