@@ -1235,6 +1235,24 @@
             }
           }
         },
+        "rentPeriod": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "enum": {
+              "type": "array",
+              "example": [
+                "monthly",
+                "yearly",
+                null
+              ],
+              "items": {}
+            },
+            "default": {}
+          }
+        },
         "propertyCategory": {
           "type": "object",
           "properties": {

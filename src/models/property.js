@@ -29,6 +29,11 @@ const PropertySchema = new mongoose.Schema({
         required: [true, "Listing type is required"],
         index: true
     },
+    rentPeriod: {
+        type: String,
+        enum: ["monthly", "yearly", null],
+        default: null
+    },
     propertyCategory: {
         type: String,
         enum: ["apartment", "house", "villa", "land", "commercial"],

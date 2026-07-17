@@ -10,6 +10,10 @@ const { mongoose } = require("../configs/dbConnection");
 const CustomError = require("../errors/customErrors");
 const Customer = require("../models/customer");
 
+const isRentListingType = (listingType) => {
+  return listingType === "rent" || listingType === "transfer_rent";
+};
+
 module.exports = {
   list: async (req, res) => {
     /*
@@ -69,6 +73,15 @@ module.exports = {
     if(req.user?.id) {
       req.body.createdBy = req.user.id
     }
+
+    if (isRentListingType(req.body.listingType)) {
+      if (req.body.rentPeriod !== "monthly" && req.body.rentPeriod !== "yearly") {
+        throw new CustomError("rentPeriod must be 'monthly' or 'yearly' for rental listings", 400);
+      }
+    } else {
+      req.body.rentPeriod = null;
+    }
+
     const data = await Property.create(req.body);
     res.status(201).send({
       error: false,
@@ -93,6 +106,8 @@ module.exports = {
     if (!data) {
       throw new CustomError("Property not found", 404);
     }
+    // console.log("data-->", data);
+    
     res.status(200).send({
       error: false,
       data,
@@ -126,12 +141,28 @@ module.exports = {
       }
     }
     
-    const allowedFields = ["title", "description", "price", "listingType", "propertyCategory", "city", "district", "neighbourhood", "fullAddress", "grossArea", "netArea", "floor", "totalFloors", "roomCount", "buildingAge", "heatingType", "hasElevator", "hasParking", "isLoanEligible", "isFeatured", "ownerId", "bathroomCount", "maintenanceFee", "isFurnished", "occupancyStatus"];
+    const allowedFields = ["title", "description", "price", "listingType", "rentPeriod", "propertyCategory", "city", "district", "neighbourhood", "fullAddress", "grossArea", "netArea", "floor", "totalFloors", "roomCount", "buildingAge", "heatingType", "hasElevator", "hasParking", "isLoanEligible", "isFeatured", "ownerId", "bathroomCount", "maintenanceFee", "isFurnished", "occupancyStatus"];
     const filteredBody = {};
     for (let key in req.body) {
       if (allowedFields.includes(key)) {
         filteredBody[key] = req.body[key]
       }
+    }
+    const existingProperty = await Property.findOne({ _id: id });
+    if (!existingProperty) {
+      throw new CustomError("Property not found", 404);
+    }
+ 
+    const effectiveListingType = filteredBody.listingType ?? existingProperty.listingType;
+ 
+    if (isRentListingType(effectiveListingType)) {
+      const effectiveRentPeriod = filteredBody.rentPeriod ?? existingProperty.rentPeriod;
+      if (effectiveRentPeriod !== "monthly" && effectiveRentPeriod !== "yearly") {
+        throw new CustomError("rentPeriod must be 'monthly' or 'yearly' for rental listings", 400);
+      }
+      filteredBody.rentPeriod = effectiveRentPeriod;
+    } else {
+      filteredBody.rentPeriod = null;
     }
     const data = await Property.findOneAndUpdate({ _id: id }, filteredBody, {returnDocument: "after", runValidators: true});
     if (!data) {
