@@ -831,7 +831,7 @@
           "Favorites"
         ],
         "summary": "List Favorites",
-        "description": "\r  You can use <u>filter[] & search[] & sort[] & page & limit</u> queries with endpoint.\r  <ul> Examples:\r  <li>URL/?<b>filter[field1]=value1&filter[field2]=value2</b></li>\r  <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>\r  <li>URL/?<b>sort[field1]=asc&sort[field2]=desc</b></li>\r  <li>URL/?<b>limit=10&page=1</b></li>\r  </ul>\r  ",
+        "description": " By default, returns only the authenticated user's own favorites —\r  this applies to admins too, so \"GET /favorites\" always means \"my favorites\", never \"everyone's favorites\". \r  Admins who explicitly want to see ALL users' favorites (e.g. for an analytics/dashboard view) can pass <u>?all=true</u>. Regular users cannot use this flag; it's silently ignored for them.\r  You can use <u>filter[] & search[] & sort[] & page & limit</u> queries with endpoint.\r  <ul> Examples:\r  <li>URL/?<b>filter[field1]=value1&filter[field2]=value2</b></li>\r  <li>URL/?<b>search[field1]=value1&search[field2]=value2</b></li>\r  <li>URL/?<b>sort[field1]=asc&sort[field2]=desc</b></li>\r  <li>URL/?<b>limit=10&page=1</b></li>\r  </ul>\r  ",
         "responses": {
           "200": {
             "description": "OK"
@@ -1016,6 +1016,30 @@
         "parameters": [
           {
             "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/customers/{id}/note/{noteId}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "noteId",
             "in": "path",
             "required": true,
             "type": "string"

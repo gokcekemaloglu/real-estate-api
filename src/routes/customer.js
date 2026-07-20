@@ -12,6 +12,9 @@ router.route("/")
 
 router.route("/:id/status")
     .patch(customer.changeCustomerStatus)
+router.route("/:id/note/:noteId")
+    .delete(customer.deleteSingleNote)
+
 
 router.route("/:id")
     .get(customer.read)

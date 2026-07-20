@@ -184,5 +184,34 @@ module.exports = {
       message: "Customer hard deleted successfully",
       data,
     });
+  },
+  deleteSingleNote: async (req, res) => {
+    const { id, noteId } = req.params;
+
+    // Validate parameters identifiers formats natively
+    if (!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(noteId)) {
+      throw new CustomError("Invalid ID format.", 400);
+    }
+
+    if (!req.user || !req.user.isAdmin) {
+      throw new CustomError("Only admins can delete customers notes.", 403);
+    }
+
+    // Leverages MongoDB's atomic $pull operator to match and wipe out targeted subdocument arrays items without rewriting heavy parent schemas cells!
+    const updatedCustomer = await Customer.findOneAndUpdate(
+      { _id: id },
+      { $pull: { note: { _id: noteId } } }, // Pulls the nested object matching exact noteId
+      { returnDocument: "after" } // Yields the freshly modified profile straight to client
+    );
+
+    if (!updatedCustomer) {
+      throw new CustomError("Customer not found.", 404);
+    }
+
+    res.status(200).send({
+      error: false,
+      message: "Note deleted successfully.",
+      data: updatedCustomer,
+    });
   }
 };

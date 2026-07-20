@@ -16,7 +16,9 @@ module.exports = {
     /*
       #swagger.tags = ["Favorites"]
       #swagger.summary = "List Favorites"
-      #swagger.description = `
+      #swagger.description = ` By default, returns only the authenticated user's own favorites —
+        this applies to admins too, so "GET /favorites" always means "my favorites", never "everyone's favorites". 
+        Admins who explicitly want to see ALL users' favorites (e.g. for an analytics/dashboard view) can pass <u>?all=true</u>. Regular users cannot use this flag; it's silently ignored for them.
         You can use <u>filter[] & search[] & sort[] & page & limit</u> queries with endpoint.
         <ul> Examples:
           <li>URL/?<b>filter[field1]=value1&filter[field2]=value2</b></li>
@@ -26,13 +28,16 @@ module.exports = {
         </ul>
       `
     */
-    let customFilter = {};
-    if (!req.user?.isAdmin) {
-      if (!req.user?.id) {
-        throw new CustomError("Authentication required to view favorites", 401);
-      }
-      customFilter = { userId: req.user.id };
-    }
+    // let customFilter = {};
+    // if (!req.user?.isAdmin) {
+    //   if (!req.user?.id) {
+    //     throw new CustomError("Authentication required to view favorites", 401);
+    //   }
+    //   customFilter = { userId: req.user.id };
+    // }
+
+    const wantsAllFavorites = req.user?.isAdmin && req.query?.all === "true"
+    const customFilter = wantsAllFavorites ? {} : { userId: req.user.id };
     const data = await res.getModelList(Favorite, customFilter, [
       "userId",
       { path: "propertyId", populate: { path: "ownerId" } },
