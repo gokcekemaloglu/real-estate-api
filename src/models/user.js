@@ -10,19 +10,15 @@ const validatePassword = require("../helpers/validatePassword");
 const bcrypt = require("bcrypt");
 const { comparePassword } = require("../helpers/methodHelper");
 
-/* ------------------------------------------------------- *
-User Model requirements
-{
-    "userName": "admin",
-    "password": "aA?123456",
-    "email": "admin@site.com",
-    "firstName": "admin",
-    "lastName": "admin"
-}
-/* ------------------------------------------------------- */
 
 const UserSchema = new mongoose.Schema(
   {
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
     userName: {
       type: String,
       required: [true, "Username is required"],
@@ -32,13 +28,25 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      // required: [true, "Password is required"],
+      required: function () {
+        return this.googleId ? false : true;
+      },
       trim: true,
       validate: {
         validator: validatePassword,
         message:
           "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character",
       },
+      // validate: {
+      //   // Skip format validation entirely when there's no password to validate (Google accounts) — otherwise this would run against `undefined` and fail.
+      //   validator: function (value) {
+      //     if (!value) return true;
+      //     return validatePassword(value);
+      //   },
+      //   message:
+      //     "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+      // },
       select: false,
     },
     firstName: {

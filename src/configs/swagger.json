@@ -441,8 +441,38 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/google": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Google Sign-In",
+        "description": "Verifies a Google ID token from the frontend, finds or creates the matching user, and returns the same Token/JWT pair as a regular login",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "credential": {
+                  "type": "string",
+                  "example": "eyJhbGciOi..."
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }
@@ -1995,6 +2025,26 @@
     "User": {
       "type": "object",
       "properties": {
+        "googleId": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "unique": {
+              "type": "boolean",
+              "example": true
+            },
+            "sparse": {
+              "type": "boolean",
+              "example": true
+            },
+            "index": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
         "userName": {
           "type": "object",
           "properties": {
@@ -2032,14 +2082,7 @@
               "type": "function"
             },
             "required": {
-              "type": "array",
-              "example": [
-                true,
-                "Password is required"
-              ],
-              "items": {
-                "type": "string"
-              }
+              "type": "function"
             },
             "trim": {
               "type": "boolean",

@@ -7,10 +7,54 @@
 const Token = require("../models/token");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
 
 const CustomError = require("../errors/customErrors");
 const { signAccessToken, signRefreshToken } = require("../helpers/jwtFunctions");
 const { generateSimpleTokenKey } = require("../helpers/methodHelper");
+
+// Single shared client instance for verifying Google ID tokens
+const getGoogleClient = () => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  if (!clientId) {
+    console.error("🚨 KRİTİK HATA: process.env.GOOGLE_CLIENT_ID bulunamadı! .env dosyanızı kontrol edin.");
+  }
+  return new OAuth2Client(clientId);
+};
+
+// Shared by login() and googleAuth() — issues the same Token/JWT pair regardless of how the user authenticated, so the rest of the app favorites, admin checks, etc.) never has to know or care which login method was used.
+const issueSessionResponse = async (res, user, message) => {
+  let tokenData = await Token.findOne({ userId: user._id });
+  if (!tokenData) {
+    tokenData = await Token.create({
+      userId: user._id,
+      token: generateSimpleTokenKey(user._id.toString()),
+    });
+  }
+ 
+  const accessToken = signAccessToken(user);
+  const refreshToken = signRefreshToken(user);
+ 
+  res.status(200).send({
+    error: false,
+    message,
+    data: {
+      token: tokenData.token,
+      jwt: {
+        access: accessToken,
+        refresh: refreshToken,
+      },
+      user: {
+        _id: user._id,
+        userName: user.userName,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isAdmin: user.isAdmin,
+      },
+    },
+  });
+};
 
 module.exports = {
   signup: async (req, res) => {
@@ -81,6 +125,11 @@ module.exports = {
       throw new CustomError("Invalid username or password", 401);
     }
 
+    // A Google-only account has no local password to compare against — guide the user to the correct sign-in method instead of a confusing "invalid password" error.
+    if (!user.password) {
+      throw new CustomError("This account uses Google Sign-In. Please continue with Google.", 401);
+    }
+
     // 3-Check if user is active
     if (!user.isActive) {
       throw new CustomError("This account is no longer active", 401);
@@ -98,37 +147,83 @@ module.exports = {
 
     // 5-If everything is okay, send token to client
     // --- SIMPLE TOKEN MANAGEMENT ---
-    let tokenData = await Token.findOne({ userId: user._id });
-    if (!tokenData) {
-      tokenData = await Token.create({
-        userId: user._id,
-        token: generateSimpleTokenKey(user._id.toString()),
+    await issueSessionResponse(res, user, "Login successful");
+  },
+  // GOOGLE SIGN-IN
+  googleAuth: async (req, res) => {
+    /*
+      #swagger.tags = ["Authentication"]
+      #swagger.summary = "Google Sign-In"
+      #swagger.description = 'Verifies a Google ID token from the frontend, finds or creates the matching user, and returns the same Token/JWT pair as a regular login'
+      #swagger.parameters["body"] = {
+        in: "body",
+        required: true,
+        schema: {
+          "credential": "eyJhbGciOi..." 
+        }
+      }
+    */
+    const { credential } = req.body;
+    if (!credential) {
+      throw new CustomError("Google credential is required", 400);
+    }
+ 
+    // 1-Verify the ID token against Google's servers. This throws if the token is expired, malformed, or was issued for a different client.
+    let payload;
+    try {
+      const clientInstance = getGoogleClient()
+      const ticket = await clientInstance.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      payload = ticket.getPayload();
+    } catch (err) {
+      throw new CustomError("Invalid or expired Google credential", 401);
+    }
+ 
+    const { sub: googleId, email, given_name, family_name, email_verified } = payload;
+    if (!email || !email_verified) {
+      throw new CustomError("Your Google account's email is not verified", 401);
+    }
+ 
+    // 2-Look up by googleId first (returning user)
+    let user = await User.findOne({ googleId });
+ 
+    // 3-Not found by googleId — maybe this email already has a classic account. Link the two instead of creating a duplicate.
+    if (!user) {
+      user = await User.findOne({ email });
+      if (user) {
+        user.googleId = googleId;
+        user.isEmailVerified = true;
+        await user.save({ validateBeforeSave: false });
+      }
+    }
+ 
+    // 4-No account at all — create a brand new one. userName must be unique in this schema, so we derive one from the email's local part and disambiguate if it's already taken.
+    if (!user) {
+      const baseUserName = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "") || "user";
+      let candidateUserName = baseUserName;
+      let suffix = 1;
+      while (await User.findOne({ userName: candidateUserName })) {
+        candidateUserName = `${baseUserName}${suffix++}`;
+      }
+ 
+      user = await User.create({
+        googleId,
+        email,
+        userName: candidateUserName,
+        firstName: given_name || "Google",
+        lastName: family_name || "User",
+        isEmailVerified: true,
       });
     }
-
-    // --- JWT MANAGEMENT ---
-    const accessToken = signAccessToken(user);
-    const refreshToken = signRefreshToken(user);
-
-    res.status(200).send({
-      error: false,
-      message: "Login successful",
-      data: {
-        token: tokenData.token,
-        jwt: {
-          access: accessToken,
-          refresh: refreshToken
-        },
-        user: {
-          _id: user._id,
-          userName: user.userName,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isAdmin: user.isAdmin
-        },
-      },
-    });
+ 
+    if (!user.isActive) {
+      throw new CustomError("This account is no longer active", 401);
+    }
+ 
+    // 5-From here on, behave exactly like a normal login
+    await issueSessionResponse(res, user, "Google sign-in successful");
   },
   // REFRESH JWT METHOD
   refresh: async (req, res) => {

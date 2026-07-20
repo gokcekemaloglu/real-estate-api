@@ -14,6 +14,7 @@ const auth = require("../controllers/auth")
 // URL: /auth
 router.post("/signup", auth.signup);
 router.post('/login', auth.login);
+router.post('/google', auth.googleAuth);
 router.post('/refresh', auth.refresh);
 router.get('/logout', auth.logout);
 
