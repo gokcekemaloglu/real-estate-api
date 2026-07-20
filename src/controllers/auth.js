@@ -75,7 +75,6 @@ module.exports = {
       }
     */
     const { userName, email, password, firstName, lastName } = req.body;
-    console.log(req.body);
     
     if (!userName || !email || !password || !firstName || !lastName) {
       throw new CustomError("All fields are required", 400);
