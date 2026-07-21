@@ -35,8 +35,24 @@ app.set("query parser", "extended")
 // Cors
 const cors = require("cors")
 
+// Dynamic origin validation matrix accommodating both local development loopbacks and production environments URLs injected seamlessly via process.env tokens
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    process.env.CLIENT_URL
+].filter(Boolean); // Cleans out any undefined or empty string cells from the layout arrays
+
 const corsOptions = {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: function (origin, callback) {
+        // Allow requests with no origin specified, such as Postman, server-to-server or mobile apps
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error("CORS yasal erişim engeli: Bu kök adresten istek atılamaz."));
+        }
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
     exposedHeaders: ["Authorization", "set-cookie"]
@@ -111,6 +127,6 @@ app.use(require("./src/middlewares/errorHandler"));
 
 
 // RUN SERVER:
-app.listen(PORT, HOST, () => console.log(`Server running at http://${HOST}:${PORT}`))
+app.listen(PORT, () => console.log(`Server running at http://${PORT}`))
 
 /* ----------------------------------- */
