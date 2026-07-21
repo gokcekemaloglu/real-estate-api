@@ -186,6 +186,10 @@ module.exports = {
     });
   },
   deleteSingleNote: async (req, res) => {
+    /*
+      #swagger.tags = ["Customers"]
+      #swagger.summary = "Delete Dynamic Customer Sub-Note Document"
+    */
     const { id, noteId } = req.params;
 
     // Validate parameters identifiers formats natively
