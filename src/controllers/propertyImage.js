@@ -7,6 +7,7 @@
 const PropertyImage = require("../models/propertyImage");
 const { mongoose } = require("../configs/dbConnection");
 const CustomError = require("../errors/customErrors");
+const cloudinary = require("cloudinary").v2;
 
 module.exports = {
   list: async (req, res) => {
@@ -63,8 +64,8 @@ module.exports = {
       throw new CustomError("propertyId and image file are required", 400)
     }
 
-    // 2. Map the uploaded filename to the dynamic static web url path
-    const imageUrl = `/uploads/${req.file.filename}`;
+    // 2. Swapped legacy static local folder path string definitions with 'req.file.path'. This safely stores the absolute Cloudinary secure CDN image URL link into MongoDB!
+    const imageUrl = req.file.path;
     
     const data = await PropertyImage.create({ propertyId, imageUrl});
     res.status(201).send({
@@ -181,14 +182,34 @@ module.exports = {
     if(!req.user || !req.user?.isAdmin) {
       throw new CustomError("Only admins can delete property Images", 403)
     }
-    const data = await PropertyImage.findOneAndDelete({ _id: id });
-    if (!data) {
+    // 1. Fetch record parameters from MongoDB to inspect URL segments before committing deletion queries
+    const targetImage = await PropertyImage.findById(id);
+    if (!targetImage) {
       throw new CustomError("Property Image not found", 404);
     }
+
+    // 2. Safely extract Cloudinary public_id from database string link mappings.
+    // Cloudinary folder schemas configuration matches 'gorkem-emlak-portfolio/' prefix exactly.
+    try {
+      const imageUrlStr = targetImage.imageUrl;
+      const urlTokens = imageUrlStr.split("/");
+      const lastTokenWithExt = urlTokens[urlTokens.length - 1]; // e.g., "img-123-456.webp"
+      const publicIdKey = lastTokenWithExt.split(".")[0]; // e.g., "img-123-456"
+      
+      const fullCloudPublicId = `gorkem-emlak-portfolio/${publicIdKey}`;
+
+      // Fires dynamic background network pipelines to erase asset from Cloudinary Media Library instantly!
+      await cloudinary.uploader.destroy(fullCloudPublicId);
+    } catch (cloudError) {
+      // Gracefully prevent operational crashes if the file was manually deleted from Cloudinary dashboard metrics
+      console.error("Cloudinary resource disposal error logs:", cloudError.message);
+    }
+
+    // 3. Finalize and purge metadata rows safely from your MongoDB database collection
+    await PropertyImage.findByIdAndDelete(id);
     res.status(200).send({
       error: false,
-      message: "Property Image record deleted successfully",
-      data,
+      message: "Property Image record and cloud asset file deleted successfully",
     });
   }
 };
