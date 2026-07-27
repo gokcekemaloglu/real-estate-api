@@ -18,6 +18,10 @@ const PropertyImageSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    cloudinaryPublicId: {
+        type: String,
+        trim: true
+    },
     isCover: {
         type: Boolean,
         default: false,

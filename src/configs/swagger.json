@@ -1744,6 +1744,18 @@
             }
           }
         },
+        "cloudinaryPublicId": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "function"
+            },
+            "trim": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
         "isCover": {
           "type": "object",
           "properties": {

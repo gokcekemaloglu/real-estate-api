@@ -66,8 +66,10 @@ module.exports = {
 
     // 2. Swapped legacy static local folder path string definitions with 'req.file.path'. This safely stores the absolute Cloudinary secure CDN image URL link into MongoDB!
     const imageUrl = req.file.path;
+    // multer-storage-cloudinary also exposes the exact public_id Cloudinary assigned (folder included) via req.file.filename — saving it now means delete() never has to reverse-engineer it from the URL later.
+    const cloudinaryPublicId = req.file.filename;
     
-    const data = await PropertyImage.create({ propertyId, imageUrl});
+    const data = await PropertyImage.create({ propertyId, imageUrl, cloudinaryPublicId});
     res.status(201).send({
       error: false,
       message: "Property Image created successfully",
@@ -120,7 +122,6 @@ module.exports = {
     if (!mongoose.Types.ObjectId.isValid(propertyId)) {
       throw new CustomError("Invalid propertyId format", 400);
     }
-
 
     const data = await PropertyImage.findOneAndUpdate({ _id: id }, {propertyId}, {returnDocument: "after", runValidators: true});
     if (!data) {
@@ -191,12 +192,16 @@ module.exports = {
     // 2. Safely extract Cloudinary public_id from database string link mappings.
     // Cloudinary folder schemas configuration matches 'gorkem-emlak-portfolio/' prefix exactly.
     try {
-      const imageUrlStr = targetImage.imageUrl;
-      const urlTokens = imageUrlStr.split("/");
-      const lastTokenWithExt = urlTokens[urlTokens.length - 1]; // e.g., "img-123-456.webp"
-      const publicIdKey = lastTokenWithExt.split(".")[0]; // e.g., "img-123-456"
+      let fullCloudPublicId = targetImage.cloudinaryPublicId;
+      if (!fullCloudPublicId) {
+        // Legacy fallback for records created before cloudinaryPublicId existed
+        const imageUrlStr = targetImage.imageUrl;
+        const urlTokens = imageUrlStr.split("/");
+        const lastTokenWithExt = urlTokens[urlTokens.length - 1]; // e.g., "img-123-456.webp"
+        const publicIdKey = lastTokenWithExt.split(".")[0]; // e.g., "img-123-456"
       
-      const fullCloudPublicId = `gorkem-emlak-portfolio/${publicIdKey}`;
+        const fullCloudPublicId = `gorkem-emlak-portfolio/${publicIdKey}`;
+      }      
 
       // Fires dynamic background network pipelines to erase asset from Cloudinary Media Library instantly!
       await cloudinary.uploader.destroy(fullCloudPublicId);
