@@ -28,14 +28,10 @@ module.exports = {
         </ul>
       `
     */
-    // let customFilter = {};
-    // if (!req.user?.isAdmin) {
-    //   if (!req.user?.id) {
-    //     throw new CustomError("Authentication required to view favorites", 401);
-    //   }
-    //   customFilter = { userId: req.user.id };
-    // }
 
+    if (!req.user?.id) {
+      throw new CustomError("Authentication required to view favorites", 401);
+    }
     const wantsAllFavorites = req.user?.isAdmin && req.query?.all === "true"
     const customFilter = wantsAllFavorites ? {} : { userId: req.user.id };
     const data = await res.getModelList(Favorite, customFilter, [

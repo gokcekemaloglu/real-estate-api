@@ -37,7 +37,5 @@ router.use("/customers", require("./customer"))
 // Documents:
 router.use("/documents", require("./document"))
 
-
-
 /* ----------------------------------- */
 module.exports = router
