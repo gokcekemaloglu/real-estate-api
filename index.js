@@ -22,7 +22,7 @@ const PORT = process.env?.PORT || 8000
 const {dbConnection} = require ("./src/configs/dbConnection")
 dbConnection()
 
-/* ------------------------------------------------------- */
+/* ------------------------------------ */
 // Middlewares:
 
 // Accept JSON:
@@ -84,8 +84,7 @@ app.use(require("./src/middlewares/queryHandler"))
 
 // StaticFiles:
 // Express static middleware opens public folder to the world, allowing access to uploaded images via URL. For example, an image stored at public/uploads/image.jpg can be accessed at http://HOST:PORT/uploads/image.jpg. This is essential for serving uploaded files to clients.
-app.use(express.static("public"));
-/* ------------------------------------------------------- */
+// app.use(express.static("public"));
 
 /* ----------------------------------- */
 // Routes:
@@ -126,7 +125,7 @@ app.use((req, res) => {
 // errorHandler:
 app.use(require("./src/middlewares/errorHandler"));
 
-/* ------------------------------------------------------- */
+/* ------------------------------------ */
 
 
 // RUN SERVER:

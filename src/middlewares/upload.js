@@ -35,10 +35,10 @@ const storage = new CloudinaryStorage({
   }
 });
 
-// 2. Security Filter: Only allow images (.jpg, .jpeg, .png)
+// 2. Security Filter: Only allow images (.jpg, .jpeg, .png, .webp)
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png/
+  const allowedTypes = /jpeg|jpg|png|webp/
   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase())
   const mimetype = allowedTypes.test(file.mimetype)
     if (extname && mimetype) {
